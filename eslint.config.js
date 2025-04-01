@@ -7,11 +7,11 @@ export default [
   {
     languageOptions: { globals: globals.browser },
     rules: {
-      "prettier/prettier": "error", // Enforce Prettier formatting
-      "indent": ["error", 2], // Example rule for indentation
-      "semi": ["error", "always"], // Example rule for semicolons
+      "prettier/prettier": "error",
+      "indent": ["error", 2],
+      "semi": ["error", "always"],
     },
-    plugins: ["prettier"], // Add Prettier plugin
+    plugins: ["prettier"],
   },
   pluginJs.configs.recommended,
 ];
