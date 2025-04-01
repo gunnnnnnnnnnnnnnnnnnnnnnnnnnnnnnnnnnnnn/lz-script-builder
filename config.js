@@ -1,0 +1,112 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+// ENV
+export const ENVIRONMENT = 'q'; // p | q
+
+const CONFIG_BY_ENV = {
+    'p': {
+        CLIENT_ID: 'lvbsgr3PBzYOahe58zVRiYPgNxVEsy1l',
+        CLIENT_SECRET: process.env.PROD_CLIENT_SECRET,
+        ANCILLARY_API_KEY: process.env.PROD_ANCILLARY_API_KEY,
+        ECP_HOST: 'https://experts-collab-platform.apigw.legalzoom.com',
+        ANCILLARY_HOST: 'https://ancillary.lzlegalservices.com',
+        AUTH_HOST: 'https://auth.apigw.legalzoom.com',
+        AGREEMENT_HOST: 'https://legal-agreement.apigw.legalzoom.com',
+        SUBSCRIPTIONS_HOST: 'https://subscription.apigw.legalzoom.com',
+        ORDERS_HOST: 'https://order.apigw.legalzoom.com',
+        ADVISOR_VIEW_HOST: 'https://advisor-view.apigw.legalzoom.com',
+        ADVISOR_CONFIG_HOST: 'https://advisor-configuration.apigw.legalzoom.com',
+        CONSULTATIONS_HOST: 'https://consultation.apigw.legalzoom.com',
+    },
+    'q': {
+        CLIENT_ID: 'JuD3KjTvzhLj12tmByWix1PKXCmyibnA',
+        CLIENT_SECRET: process.env.QA_CLIENT_SECRET,
+        ANCILLARY_API_KEY: process.env.QA_ANCILLARY_API_KEY,
+        ECP_HOST: 'https://experts-collab-platform.qa.apigw.legalzoom.com',
+        ANCILLARY_HOST: 'https://qa.ancillary.lzlegalservices.com',
+        AUTH_HOST: 'https://auth.qa.apigw.legalzoom.com',
+        AGREEMENT_HOST: 'https://legal-agreement.qa.apigw.legalzoom.com',
+        ORDERS_HOST: 'https://order.qa.apigw.legalzoom.com',
+        ADVISOR_VIEW_HOST: 'https://advisor-view.qa.apigw.legalzoom.com',
+        ADVISOR_CONFIG_HOST: 'https://advisor-configuration.qa.apigw.legalzoom.com',
+        CONSULTATIONS_HOST: 'https://consultation.qa.apigw.legalzoom.com',
+    },
+    'd': {
+        CLIENT_ID: '72CN0fNhKMAjOPWOHFYpWiogx5kmshuh',
+        CLIENT_SECRET: process.env.DEV_CLIENT_SECRET,
+        ANCILLARY_API_KEY: process.env.DEV_ANCILLARY_API_KEY,
+        ECP_HOST: 'https://experts-collab-platform.dev.apigw.legalzoom.com',
+        ANCILLARY_HOST: 'https://dev.ancillary.lzlegalservices.com',
+        AUTH_HOST: 'https://auth.dev.apigw.legalzoom.com',
+        AGREEMENT_HOST: 'https://legal-agreement.dev.apigw.legalzoom.com',
+        ORDERS_HOST: 'https://order.dev.apigw.legalzoom.com',
+        ADVISOR_VIEW_HOST: 'https://advisor-view.dev.apigw.legalzoom.com',
+        ADVISOR_CONFIG_HOST: 'https://advisor-configuration.dev.apigw.legalzoom.com',
+        CONSULTATIONS_HOST: 'https://consultation.dev.apigw.legalzoom.com',
+    }
+};
+
+const OTHER_CONFIGS = {
+    KARBON_HOST: 'https://api.karbonhq.com',
+    KARBON_ALTM_TOKEN: 'b7f81ebf-a162-4e48-ad00-23bc71969e0f',
+};
+
+export const LOCATIONS = [
+    'AK',
+    'WA',
+    'OR',
+    'NV',
+    'CA',
+    'HI',
+    'ID',
+    'MT',
+    'WY',
+    'UT',
+    'CO',
+    'AZ',
+    'NM',
+    'ND',
+    'SD',
+    'MN',
+    'IN',
+    'NE',
+    'KS',
+    'OK',
+    'TX',
+    'AR',
+    'LA',
+    'MO',
+    'WI',
+    'IL',
+    'CT',
+    'DE',
+    'DC',
+    'FL',
+    'GA',
+    'KY',
+    'IA',
+    'ME',
+    'MD',
+    'MA',
+    'MI',
+    'MS',
+    'NH',
+    'NJ',
+    'NY',
+    'NC',
+    'OH',
+    'PA',
+    'RI',
+    'SC',
+    'TN',
+    'VT',
+    'VA',
+    'WV',
+    'AL',
+]
+
+export default {
+    ...OTHER_CONFIGS,
+    ...CONFIG_BY_ENV[ENVIRONMENT],
+}; 
