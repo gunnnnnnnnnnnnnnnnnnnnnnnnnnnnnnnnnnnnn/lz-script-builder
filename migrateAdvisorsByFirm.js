@@ -138,7 +138,7 @@ const addPartnerAttributeToUser = async (payload) => {
         const partnerAttributes = (await authApi.getUserByUserId(payload.userId)).partnerAttributes;
         if (!partnerAttributes) {
             // Create a new partner attribute for the user
-            await authApi.createPartnerAttribute(payload.userEmail, payload.advisorId, FIRM_ID);
+            await authApi.createPartnerAttribute(payload.userEmail, payload.advisorId, FIRM_ID, ['attorney']);
             returnedPayload.isPartnerAttributeCreated = true;
         } else {
             returnedPayload.oldPartnerAttributes = JSON.stringify(partnerAttributes);
@@ -148,7 +148,10 @@ const addPartnerAttributeToUser = async (payload) => {
                 partnerAttributes.firmId != FIRM_ID
             ) {
                 // Incorrect partner attribute is found: Update partner attribute
-                await authApi.updatePartnerAttribute(payload.userEmail, payload.advisorId, FIRM_ID, partnerAttributes.roles);
+                const roles = !partnerAttributes.roles || partnerAttributes.roles.length == 0
+                    ? ['attorney']
+                    : partnerAttributes.roles;
+                await authApi.updatePartnerAttribute(payload.userId, payload.userEmail, payload.advisorId, FIRM_ID, roles);
                 returnedPayload.isPartnerAttributeupdated = true;
             }
         }

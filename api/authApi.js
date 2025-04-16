@@ -180,12 +180,13 @@ export const createAccountMembership = async (userId, roleId, accountId) => {
 };
 
 export const createPartnerAttribute = async (email, advisorId, advisorFirmId, roles) => {
-    const uri = 'v1/partner/users/internal';
+    const uri = 'v1/partner/users';
 
     try {
         const res = await client.post(uri, {
             email,
-            attorneyId: advisorId,
+            password: createPassword(),
+            internalId: advisorId,
             firmId: advisorFirmId,
             roles: roles ?? [],
         }, {
@@ -201,12 +202,13 @@ export const createPartnerAttribute = async (email, advisorId, advisorFirmId, ro
     }
 };
 
-export const updatePartnerAttribute = async (email, advisorId, advisorFirmId, roles) => {
-    const uri = `v1/partner/users/${email}/internal`;
+export const updatePartnerAttribute = async (userId, email, advisorId, advisorFirmId, roles) => {
+    const uri = `v1/partner/users/${userId}`;
 
     try {
         const res = await client.put(uri, {
-            attorneyId: advisorId,
+            email,
+            internalId: advisorId,
             firmId: advisorFirmId,
             roles: roles ?? [],
         }, {
