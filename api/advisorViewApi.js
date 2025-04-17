@@ -64,8 +64,6 @@ export const getConsultationCustomersByFirm = async (firmId) => {
                 }
             });
 
-            // TODO: remove next line, "return result;"
-            return result;
         } while (++page < totalPage);
     } catch (e) {
         console.error('Failed to find consultation customers', e);

@@ -79,7 +79,7 @@ const process = async (payload, index, total) => {
 
 const getBatchPayloads = async () => {
     const payloads = [];
-    const customers = (await advisorViewApi.getConsultationCustomersByFirm(FIRM_ID)).splice(1, 1);
+    const customers = (await advisorViewApi.getConsultationCustomersByFirm(FIRM_ID));//splice(1, 1);
 
     for (const customer of customers) {
         const consultations = (await consultationsApi.getConsultationsByCustomerId(customer.customerId, consultationsApi.APPOINTMENT_STATUS_ENUM.Scheduled))?.appointmentHistory ?? [];

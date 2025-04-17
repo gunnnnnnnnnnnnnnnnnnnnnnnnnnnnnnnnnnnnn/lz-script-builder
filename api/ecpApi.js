@@ -378,3 +378,68 @@ export const assignSkillToExpert = async (tenant, expertUserId, skillName, locat
         throw e;
     }
 }
+
+const getOutdatedWorkItemIds = async (tenant, workTemplateName, page = 0, size = 100) => {
+    const uri = `api/v1/work-items/outdated`;
+
+    try {
+        const res = await client.get(uri, {
+            headers: {
+                ...(await getAuthHeaders()),
+                'x-lz-current-tenant-name': tenant,
+            },
+            params: {
+                'work-template': workTemplateName,
+                page,
+                size,
+            },
+        });
+
+        return res?.data;
+    } catch (e) {
+        console.error('Failed to find task', e);
+        return []
+    }
+}
+
+export const getAllOutdatedWorkItemIds = async (tenant, workTemplateName) => {
+    const workItemIdSet = new Set();
+    let totalPage = 0;
+    let page = 0;
+
+    try {
+        do {
+            const res = await getOutdatedWorkItemIds(tenant, workTemplateName, page, 100);
+            if (res == null) { return workItemIdSet; }
+
+            totalPage = res.totalPages;
+
+            res.content?.forEach(workItemId => {
+                workItemIdSet.add(workItemId);
+            });
+        } while (++page < totalPage);
+    } catch (e) {
+        console.error('Failed to get oudated work item ids.', e);
+        return [];
+    }
+
+    return workItemIdSet;
+}
+
+export const syncWorkItem = async (tenant, workItemId) => {
+    const uri = `api/v1/work-items/${workItemId}/sync`;
+
+    try {
+        const res = await client.post(uri, null, {
+            headers: {
+                ...(await getAuthHeaders()),
+                'x-lz-current-tenant-name': tenant,
+            },
+        });
+
+        return res?.data;
+    } catch (e) {
+        //console.error('Failed to sync work item', e);
+        throw e;
+    }
+}
