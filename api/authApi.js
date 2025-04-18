@@ -219,7 +219,7 @@ export const updatePartnerAttribute = async (userId, email, advisorId, advisorFi
 
         return res?.data;
     } catch (e) {
-        console.error(`Failed to create account membership (userEmail: ${email})`, e);
+        console.error(`Failed to update account membership (userEmail: ${email})`, e);
         throw e;
     }
 };

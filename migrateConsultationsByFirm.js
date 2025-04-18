@@ -15,8 +15,8 @@ const limit = pLimit(5);
 /** Migration Setup */
 const TENANT = 'LEGAL_PLANS';
 const WORK_TEMPLATE_NAME = 'LEGAL_PLANS_CONSULTATION';
-const FIRM_ID = 'd7ec0a75-3a02-43af-934f-af60b5fa521c';             // TODO: change per request
-const FIRM_ACCOUNT_ID = '7834d75e-2361-4a74-88ae-205114755c1d';     // TODO: change per request
+const FIRM_ID = 'cd461302-1d47-4b33-8e2a-9df5110bff2f';             // TODO: change per request
+const FIRM_ACCOUNT_ID = 'f3c8ad9a-7fd4-4172-b4fb-95b70fa72621';     // TODO: change per request
 
 const FILE_NAME = `${ENVIRONMENT} - Consultation Migration (${FIRM_ACCOUNT_ID}) [${getFormattedTimestamp()}].csv`;
 
@@ -104,7 +104,7 @@ const getBatchPayloads = async () => {
 
 (async () => {
     console.log(`Start ${FILE_NAME}`);
-    const payloads = (await getBatchPayloads()).splice(1, 1);
+    const payloads = (await getBatchPayloads());//.splice(1, 1);
     const promises = payloads.map((payload, index) => limit(() => process(payload, index + 1, payloads.length)));
     const result = await Promise.all(promises);
 
