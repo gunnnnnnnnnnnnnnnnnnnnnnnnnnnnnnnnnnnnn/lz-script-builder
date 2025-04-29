@@ -15,8 +15,8 @@ const limit = pLimit(5);
 /** Migration Setup */
 const TENANT = 'LEGAL_PLANS';
 const WORK_TEMPLATE_NAME = 'LEGAL_PLANS_CONSULTATION';
-const FIRM_ID = 'cd461302-1d47-4b33-8e2a-9df5110bff2f';             // TODO: change per request
-const FIRM_ACCOUNT_ID = 'f3c8ad9a-7fd4-4172-b4fb-95b70fa72621';     // TODO: change per request
+const FIRM_ID = 'b8af2f44-b4fc-40cf-a3c3-17a8afc5dc22';             // TODO: change per request
+const FIRM_ACCOUNT_ID = 'b8af2f44-b4fc-40cf-a3c3-17a8afc5dc22';     // TODO: change per request
 
 const FILE_NAME = `${ENVIRONMENT} - Consultation Migration (${FIRM_ACCOUNT_ID}) [${getFormattedTimestamp()}].csv`;
 
@@ -85,17 +85,21 @@ const getBatchPayloads = async () => {
         const consultations = (await consultationsApi.getConsultationsByCustomerId(customer.customerId, consultationsApi.APPOINTMENT_STATUS_ENUM.Scheduled))?.appointmentHistory ?? [];
 
         for (const consultation of consultations) {
-            payloads.push({
-                customerId: customer.customerId,
-                customerEmail: customer.email,
-                firstName: customer.firstName,
-                lastName: customer.lastName,
-                consultationId: consultation.consultationRequestId,
-                orderId: consultation.orderId,
-                processingOrderId: consultation.processingOrderId,
-                timezone: consultation.timeZone,
-                confirmationNumber: consultation.timeTradeApptConfNumber,
-            });
+            const consultationDetail = await advisorViewApi.getConsultationById(consultation.consultationRequestId, customer.customerId);
+
+            if (consultationDetail?.advisorDetails?.firmId?.toLocaleLowerCase() == FIRM_ID.toLocaleLowerCase()) {
+                payloads.push({
+                    customerId: customer.customerId,
+                    customerEmail: customer.email,
+                    firstName: customer.firstName,
+                    lastName: customer.lastName,
+                    consultationId: consultation.consultationRequestId,
+                    orderId: consultation.orderId,
+                    processingOrderId: consultation.processingOrderId,
+                    timezone: consultation.timeZone,
+                    confirmationNumber: consultation.timeTradeApptConfNumber,
+                });
+            }
         }
     }
 

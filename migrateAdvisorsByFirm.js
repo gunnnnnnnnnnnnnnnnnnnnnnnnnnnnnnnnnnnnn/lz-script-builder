@@ -13,8 +13,8 @@ const limit = pLimit(5);
 const TENANT = 'LEGAL_PLANS';
 const EXPERT_ROLE_NAME = 'expert';
 const LEGAL_PLAN_ATTORNEY_SKILL_NAME = 'LP_ATTORNEY';
-const FIRM_ID = 'cd461302-1d47-4b33-8e2a-9df5110bff2f';             // TODO: change per request
-const FIRM_ACCOUNT_ID = 'f3c8ad9a-7fd4-4172-b4fb-95b70fa72621';     // TODO: change per request
+const FIRM_ID = 'b8af2f44-b4fc-40cf-a3c3-17a8afc5dc22';             // TODO: change per request
+const FIRM_ACCOUNT_ID = 'b8af2f44-b4fc-40cf-a3c3-17a8afc5dc22';     // TODO: change per request
 let EXPERT_ROLE_ID = 'NOT SET';                                     // set during run time
 
 const FILE_NAME = `${ENVIRONMENT} - Advisor Migration (${FIRM_ACCOUNT_ID}) [${getFormattedTimestamp()}].csv`;
