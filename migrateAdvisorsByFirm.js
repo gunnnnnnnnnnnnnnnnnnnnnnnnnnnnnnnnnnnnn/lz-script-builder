@@ -13,8 +13,8 @@ const limit = pLimit(5);
 const TENANT = 'LEGAL_PLANS';
 const EXPERT_ROLE_NAME = 'expert';
 const LEGAL_PLAN_ATTORNEY_SKILL_NAME = 'LP_ATTORNEY';
-const FIRM_ID = 'b8af2f44-b4fc-40cf-a3c3-17a8afc5dc22';             // TODO: change per request
-const FIRM_ACCOUNT_ID = 'b8af2f44-b4fc-40cf-a3c3-17a8afc5dc22';     // TODO: change per request
+const FIRM_ID = '734e2437-11e2-411b-bb0c-32bcad667576';             // TODO: change per request
+const FIRM_ACCOUNT_ID = '76b83e82-f17a-460a-9d93-6882017ab18c';     // TODO: change per request
 let EXPERT_ROLE_ID = 'NOT SET';                                     // set during run time
 
 const FILE_NAME = `${ENVIRONMENT} - Advisor Migration (${FIRM_ACCOUNT_ID}) [${getFormattedTimestamp()}].csv`;
@@ -222,7 +222,7 @@ const process = async (advisor, index, total) => {
             { id: 'isExpertRoleAdded', title: 'Is Expert Role Added' },
             { id: 'isPartnerAttributeCreated', title: 'Is Partner Attribute Created' },
             { id: 'isPartnerAttributeupdated', title: 'Is Partner Attribute Updated' },
-            { id: 'oldPartnerAttributes', title: 'Existing Partner Attribute' },
+            { id: 'oldPartnerAttributes', title: 'Partner Attribute' },
 
             { id: 'isComplete', title: 'Is Complete' },
             { id: 'error', title: 'Error' },

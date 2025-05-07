@@ -124,8 +124,8 @@ export const syncConsultation = async (tenant, accountId, confirmationNumber) =>
 
         return res?.data[0];
     } catch (e) {
-        console.error('failed to get account from ecp', e);
-        return null;
+        console.error('failed to sync consultation', e);
+        throw e;
     }
 }
 

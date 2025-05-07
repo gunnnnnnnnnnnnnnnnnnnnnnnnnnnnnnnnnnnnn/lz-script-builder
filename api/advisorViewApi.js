@@ -82,13 +82,14 @@ export const getConsultationById = async (consultationId, customerId) => {
             headers: {
                 ...(await getAuthHeaders()),
                 'x-lz-api-version': '2.0',
-                'x-lz-customerid': customerId
+                //'x-lz-customerid': customerId,
+                'x-lz-authorize': 'false'
             },
         });
 
         return res?.data;
     } catch (e) {
         console.error('Failed to find consultation customers', e);
-        throw e;
+        return null;//throw e;
     }
 };
