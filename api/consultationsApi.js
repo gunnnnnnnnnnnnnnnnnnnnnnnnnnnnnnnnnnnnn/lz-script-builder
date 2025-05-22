@@ -44,8 +44,8 @@ export const APPOINTMENT_STATUS_ENUM = {
  *     details: null
  *   }
  */
-export const getConsultationsByCustomerId = async (customerId, appointmentStatus) => {
-    const uri = `/consultations/attorney/appointments/${customerId}?status=${appointmentStatus}`;
+export const getConsultationsByCustomerId = async (customerId) => {
+    const uri = `/consultations/attorney/appointments/${customerId}`;
 
     try {
         const res = await client.get(uri, {

@@ -14,12 +14,57 @@ const limit = pLimit(5);
 
 /** Migration Setup */
 const TENANT = 'LEGAL_PLANS';
-const WORK_TEMPLATE_NAME = 'LEGAL_PLANS_CONSULTATION';
-const FIRM_ID = '27d0c765-fbb9-40cb-b7f6-a16364c19d39';             // TODO: change per request
-const FIRM_ACCOUNT_ID = 'e0b372fd-f162-42cf-a82b-860d1f5be770';     // TODO: change per request
-const CUTOFF_DATE = new Date("2025-01-01T00:00:00Z");
 
-const FILE_NAME = `${ENVIRONMENT} - Consultation Migration (${FIRM_ACCOUNT_ID}) [${getFormattedTimestamp()}].csv`;
+const GIVEN = [
+    {
+        firmName: 'Lyda Law',
+        firmId: '27d0c765-fbb9-40cb-b7f6-a16364c19d39',
+        firmAccountId: 'e0b372fd-f162-42cf-a82b-860d1f5be770',
+    },
+    {
+        firmName: 'Helzer Law',
+        firmId: 'a637f486-14cd-44bb-b05d-3a9e7226fbb7',
+        firmAccountId: '8024ba96-cd08-4b4f-9f86-92bb2fcc96ec',
+    },
+    {
+        firmName: 'Keeney Law PLLC',
+        firmId: 'b1e23634-be1f-4356-b7f8-f3d1ef14d3d6',
+        firmAccountId: '665f6478-d8dc-4659-965f-3770e14c5777',
+    },
+    {
+        firmName: 'Lemoine Law Firm',
+        firmId: 'd1500da2-04ca-4b38-92a0-3acfe8b7765e',
+        firmAccountId: '44ea6f07-2679-4875-a5d0-f6fec1209701',
+    },
+    {
+        firmName: 'Outside Chief Legal',
+        firmId: '11189cf0-cdeb-4451-a646-52d6ca40da59',
+        firmAccountId: '94345abc-c0ab-461e-9bd7-b6dc904ef435',
+    },
+    {
+        firmName: 'Opticliff Law, LLC',
+        firmId: '734e2437-11e2-411b-bb0c-32bcad667576',
+        firmAccountId: '76b83e82-f17a-460a-9d93-6882017ab18c',
+    },
+    {
+        firmName: 'Neil W. Siegel, Attorney at Law',
+        firmId: 'cd461302-1d47-4b33-8e2a-9df5110bff2f',
+        firmAccountId: '01ea76a6-8f8f-451d-86ce-7e1b55bae510',
+    },
+    {
+        firmName: 'Miller Law Group, LLC',
+        firmId: '34d79ba4-d42f-49f8-b6ce-fc9a52098a61',
+        firmAccountId: 'ba6979c6-efcb-4fe4-ba68-103e0a034b74',
+    }, {
+        firmName: 'Lauren E.A. Truitt, PC',
+        firmId: '8ccc8ab0-86c2-4b24-b0d6-b5642aee4fc0',
+        firmAccountId: 'a48b11ed-daa7-49ba-94f5-4894c9946f02',
+    }
+];
+
+const CUTOFF_DATE = new Date("2025-01-01T00:00:00Z");
+// Phase 3 
+// const CUTOFF_DATE = new Date("2025-05-27T00:00:00Z");
 
 const createConsultationWorkItem = async (payload) => {
     const res = await ecpApi.syncConsultation(
@@ -130,18 +175,18 @@ const process = async (payload, index, total) => {
     }
 };
 
-const getBatchPayloads = async () => {
+const getBatchPayloads = async (firmId) => {
     const payloads = [];
-    const customers = (await advisorViewApi.getConsultationCustomersByFirm(FIRM_ID));//splice(1, 1);
+    const customers = (await advisorViewApi.getConsultationCustomersByFirm(firmId));//splice(1, 1);
 
     for (const customer of customers) {
-        const consultations = (await consultationsApi.getConsultationsByCustomerId(customer.customerId, consultationsApi.APPOINTMENT_STATUS_ENUM.Scheduled))?.appointmentHistory ?? [];
+        const consultations = (await consultationsApi.getConsultationsByCustomerId(customer.customerId))?.appointmentHistory ?? [];
 
         for (const consultation of consultations) {
             const consultationDetail = await advisorViewApi.getConsultationById(consultation.consultationRequestId, customer.customerId);
 
             if (
-                consultationDetail?.advisorDetails?.firmId?.toLocaleLowerCase() == FIRM_ID.toLocaleLowerCase() &&
+                consultationDetail?.advisorDetails?.firmId?.toLocaleLowerCase() == firmId.toLocaleLowerCase() &&
                 consultationDetail?.status == 'Open'
             ) {
                 payloads.push({
@@ -164,14 +209,16 @@ const getBatchPayloads = async () => {
     return payloads;
 };
 
-(async () => {
-    console.log(`Start ${FILE_NAME}`);
-    const payloads = (await getBatchPayloads());//.splice(1, 1);
+const runScript = async (firmName, firmId, firmAccountId) => {
+    const fileName = `${ENVIRONMENT} - ${firmName} Consultation Migration (${firmAccountId}) [${getFormattedTimestamp()}].csv`;
+
+    console.log(`Start ${fileName}`);
+    const payloads = (await getBatchPayloads(firmId));//.splice(1, 1);
     const promises = payloads.map((payload, index) => limit(() => process(payload, index + 1, payloads.length)));
     const result = await Promise.all(promises);
 
     const csvWriter = createObjectCsvWriter({
-        path: FILE_NAME,
+        path: fileName,
         header: [
             { id: 'accountId', title: 'Account ID' },
             { id: 'accountIdSource', title: 'Account ID Source' },
@@ -198,5 +245,10 @@ const getBatchPayloads = async () => {
     });
 
     await csvWriter.writeRecords(result);
+}
 
+(async () => {
+    for (const { firmName, firmId, firmAccountId } of GIVEN) {
+        await runScript(firmName, firmId, firmAccountId);
+    }
 })();
