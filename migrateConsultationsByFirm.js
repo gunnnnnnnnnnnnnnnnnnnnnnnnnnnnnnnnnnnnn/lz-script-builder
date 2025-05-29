@@ -16,12 +16,7 @@ const limit = pLimit(5);
 /** Migration Setup */
 const TENANT = 'LEGAL_PLANS';
 
-// const GIVEN = JSON.parse(fs.readFileSync('./phase_2.json'));
-const GIVEN = JSON.parse(fs.readFileSync('./phase_3.json'));
-
-// const CUTOFF_DATE = new Date("2025-01-01T00:00:00Z");
-// Phase 3 
-const CUTOFF_DATE = new Date("2025-05-27T00:00:00Z");
+const CONSULTATION_MIGRATION_INPUT = JSON.parse(fs.readFileSync('./consultationMigrationInput.json'));
 
 const createConsultationWorkItem = async (payload) => {
     const res = await ecpApi.syncConsultation(
@@ -100,9 +95,12 @@ const forceCompleteConsultation = async (payload) => {
 const process = async (payload, index, total) => {
     console.log(`${String(index).padStart(String(total).length, '0')}/${total} (${((index / total) * 100).toFixed(2)}%)`);
     try {
+        if (!payload.cutoffDate) {
+            throw new Error('cutoffDate is required', payload.cutoffDate);
+        }
 
         // Check for cutoff date
-        if (!payload.appointmentDate || new Date(payload.appointmentDate) < CUTOFF_DATE) {
+        if (!payload.appointmentDate || new Date(payload.appointmentDate) < payload.cutoffDate) {
             // If the appointment is scheduled before the [CUTOFF_DATE] then force complete the consultation
             payload = { ...payload, ...await forceCompleteConsultation(payload) };
 
@@ -166,16 +164,39 @@ const getBatchPayloads = async (firmId) => {
     return payloads;
 };
 
-const runScript = async (firmName, firmId, firmAccountId) => {
-    const fileName = `${ENVIRONMENT} - ${firmName} Consultation Migration (${firmAccountId}) [${getFormattedTimestamp()}].csv`;
+const EXECUTION_DATE_TIME = new Date();
 
-    console.log(`Start ${fileName}`);
+const buildFilePath = (migrationName) => {
+    const mm = String(EXECUTION_DATE_TIME.getMonth() + 1).padStart(2, '0');
+    const dd = String(EXECUTION_DATE_TIME.getDate()).padStart(2, '0');
+    const yyyy = EXECUTION_DATE_TIME.getFullYear();
+    const hour = EXECUTION_DATE_TIME.toLocaleString('en-US', {
+        hour: 'numeric',
+        hour12: true,
+    }).replace(' ', '');
+
+    return `${mm}${dd}${yyyy}/${hour}/${migrationName}`;
+}
+
+const runScript = async (migrationName, cutoffDate, firmName, firmId, firmAccountId) => {
+    const fileName = `${ENVIRONMENT} - ${firmName} Consultation Migration (${firmAccountId}) [${getFormattedTimestamp()}].csv`;
+    const filePath = buildFilePath(migrationName);
+    const fullFilePath = `${filePath}/${fileName}`;
+    fs.mkdirSync(filePath, { recursive: true });
+
+    console.log(`Start [${migrationName}] ${fileName}`);
     const payloads = (await getBatchPayloads(firmId));//.splice(1, 1);
-    const promises = payloads.map((payload, index) => limit(() => process(payload, index + 1, payloads.length)));
+    const promises = payloads.map((payload, index) => limit(() => process(
+        {
+            ...payload,
+            cutoffDate: new Date(cutoffDate),
+        },
+        index + 1,
+        payloads.length)));
     const result = await Promise.all(promises);
 
     const csvWriter = createObjectCsvWriter({
-        path: fileName,
+        path: fullFilePath,
         header: [
             { id: 'accountId', title: 'Account ID' },
             { id: 'accountIdSource', title: 'Account ID Source' },
@@ -194,7 +215,7 @@ const runScript = async (firmName, firmId, firmAccountId) => {
             { id: 'expertUserId', title: 'Expert User ID' },
             { id: 'expertFirstName', title: 'Expert First Name' },
             { id: 'expertLastName', title: 'Expert Last Name' },
-            { id: 'isConsultationForceCompleted', title: 'Force Closed' },
+            { id: 'isConsultationForceCompleted', title: 'Is Cutoff' },
 
             { id: 'isComplete', title: 'Is Complete' },
             { id: 'error', title: 'Error' },
@@ -205,7 +226,9 @@ const runScript = async (firmName, firmId, firmAccountId) => {
 }
 
 (async () => {
-    for (const { firmName, firmId, firmAccountId } of GIVEN) {
-        await runScript(firmName, firmId, firmAccountId);
+    for (const { name, cutoffDate, firms } of CONSULTATION_MIGRATION_INPUT) {
+        for (const { firmName, firmId, firmAccountId } of firms) {
+            await runScript(name, cutoffDate, firmName, firmId, firmAccountId);
+        }
     }
 })();
