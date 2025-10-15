@@ -19,6 +19,7 @@ const CONFIG_BY_ENV = {
         ADVISOR_CONFIG_HOST: 'https://advisor-configuration.apigw.legalzoom.com',
         CONSULTATIONS_HOST: 'https://consultation.apigw.legalzoom.com',
         ADVISOR_AGGREGATE_HOST: 'https://advisor-aggregate.apigw.legalzoom.com',
+        IP_HOST: 'https://ip.apigw.legalzoom.com',
     },
     'q': {
         CLIENT_ID: 'JuD3KjTvzhLj12tmByWix1PKXCmyibnA',
@@ -33,6 +34,7 @@ const CONFIG_BY_ENV = {
         ADVISOR_CONFIG_HOST: 'https://advisor-configuration.qa.apigw.legalzoom.com',
         CONSULTATIONS_HOST: 'https://consultation.qa.apigw.legalzoom.com',
         ADVISOR_AGGREGATE_HOST: 'https://advisor-aggregate.qa.apigw.legalzoom.com',
+        IP_HOST: 'https://ip.qa.apigw.legalzoom.com',
     },
     'd': {
         CLIENT_ID: '72CN0fNhKMAjOPWOHFYpWiogx5kmshuh',
@@ -47,6 +49,7 @@ const CONFIG_BY_ENV = {
         ADVISOR_CONFIG_HOST: 'https://advisor-configuration.dev.apigw.legalzoom.com',
         CONSULTATIONS_HOST: 'https://consultation.dev.apigw.legalzoom.com',
         ADVISOR_AGGREGATE_HOST: 'https://advisor-aggregate.dev.apigw.legalzoom.com',
+        IP_HOST: 'https://dev.ip.dev.aws-01.legalzoom.com',
     }
 };
 
