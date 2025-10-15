@@ -45,7 +45,7 @@ const getExpertRoleId = async () => {
  * Upserts expert with [LP_ATTORNEY] in all locations.
  */
 const setExpertSkill = async (payload) => {
-    await ecpApi.assignSkillToExpert(TENANT, payload.userId, LEGAL_PLAN_ATTORNEY_SKILL_NAME, LOCATIONS);
+    await ecpApi.assignSkillToExpert(payload.userId, LEGAL_PLAN_ATTORNEY_SKILL_NAME, LOCATIONS, TENANT);
     return payload;
 }
 

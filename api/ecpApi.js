@@ -9,14 +9,14 @@ const client = axios.create({
     baseURL: ECP_HOST,
 });
 
-export const getWorkItems = async () => {
+export const getWorkItems = async (tenantName = null) => {
     const uri = `api/v1/work-items`;
 
     try {
         const res = await client.get(uri, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -27,14 +27,14 @@ export const getWorkItems = async () => {
     }
 }
 
-export const findTaskById = async (id) => {
+export const findTaskById = async (id, tenantName = null) => {
     const uri = `api/v1/tasks/${id}`;
 
     try {
         const res = await client.get(uri, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -45,14 +45,14 @@ export const findTaskById = async (id) => {
     }
 }
 
-export const findWorkItemById = async (id) => {
+export const findWorkItemById = async (id, tenantName = null) => {
     const uri = `api/v1/work-items/${id}`;
 
     try {
         const res = await client.get(uri, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -63,14 +63,14 @@ export const findWorkItemById = async (id) => {
     }
 }
 
-export const deleteDocumentById = async (id) => {
+export const deleteDocumentById = async (id, tenantName = null) => {
     const uri = `api/v1/documents/${id}`;
 
     try {
         const res = await client.delete(uri, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -81,7 +81,7 @@ export const deleteDocumentById = async (id) => {
     }
 }
 
-export const createTaxExtension = async (accountId, workItemId, processingOrderId) => {
+export const createTaxExtension = async (accountId, workItemId, processingOrderId, tenantName = null) => {
     const uri = `api/v1/work-items/create-from-template`;
 
     try {
@@ -97,7 +97,7 @@ export const createTaxExtension = async (accountId, workItemId, processingOrderI
         }, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -108,7 +108,7 @@ export const createTaxExtension = async (accountId, workItemId, processingOrderI
     }
 }
 
-export const syncConsultation = async (tenant, accountId, confirmationNumber) => {
+export const syncConsultation = async (accountId, confirmationNumber, tenantName = null) => {
     const uri = `/api/v1/consultations/sync`;
 
     try {
@@ -118,7 +118,7 @@ export const syncConsultation = async (tenant, accountId, confirmationNumber) =>
         }], {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': tenant ?? DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -135,14 +135,14 @@ export const syncConsultation = async (tenant, accountId, confirmationNumber) =>
 }
 
 
-export const getAccountById = async (accountId, tenant) => {
+export const getAccountById = async (accountId, tenantName = null) => {
     const uri = `/api/v1/accounts/${accountId}`;
 
     try {
         const res = await client.get(uri, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': tenant ?? DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -153,14 +153,14 @@ export const getAccountById = async (accountId, tenant) => {
     }
 }
 
-export const cancelWorkItem = async (workItemId, tenant) => {
+export const cancelWorkItem = async (workItemId, tenantName = null) => {
     const uri = `/api/v1/work-items/${workItemId}/cancel`;
 
     try {
         const res = await client.patch(uri, undefined, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': tenant ?? DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -171,7 +171,7 @@ export const cancelWorkItem = async (workItemId, tenant) => {
     }
 }
 
-export const findWorkItemsByProcessingOrderId = async (processingOrderId) => {
+export const findWorkItemsByProcessingOrderId = async (processingOrderId, tenantName = null) => {
     if (!processingOrderId) { return []; }
 
     const uri = `api/v1/work-items?processing_order_id=${processingOrderId}&size=25&page=0`;
@@ -180,7 +180,7 @@ export const findWorkItemsByProcessingOrderId = async (processingOrderId) => {
         const res = await client.get(uri, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -198,6 +198,7 @@ export const createWorkItem = async (
     taxInfo,
     location,
     createdFromProcessingOrderId,
+    tenantName = null,
 ) => {
     const uri = `api/v1/work-items/create-from-template`;
 
@@ -212,7 +213,7 @@ export const createWorkItem = async (
         }, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -223,7 +224,7 @@ export const createWorkItem = async (
     }
 }
 
-export const addMessage = async (workItemId, jsonText) => {
+export const addMessage = async (workItemId, jsonText, tenantName = null) => {
     const uri = `api/v1/messages`;
 
     try {
@@ -233,7 +234,7 @@ export const addMessage = async (workItemId, jsonText) => {
         }, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -287,7 +288,7 @@ export const updateAltmInfo = async (
         const res = await client.patch(uri, request, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': 'altm',
             },
         });
 
@@ -298,7 +299,7 @@ export const updateAltmInfo = async (
     }
 }
 
-export const forceCompleteTask = async (taskId, selectedDecisionName) => {
+export const forceCompleteTask = async (taskId, selectedDecisionName, tenantName = null) => {
     const uri = `/api/v1/admin/tasks/${taskId}/complete`;
     const request = selectedDecisionName ? { selectedDecisionName } : {};
 
@@ -306,7 +307,7 @@ export const forceCompleteTask = async (taskId, selectedDecisionName) => {
         const res = await client.put(uri, request, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -317,14 +318,14 @@ export const forceCompleteTask = async (taskId, selectedDecisionName) => {
     }
 }
 
-export const uncancelWorkItem = async (workItemId) => {
+export const uncancelWorkItem = async (workItemId, tenantName = null) => {
     const uri = `/api/v1/work-items/${workItemId}/un-cancel`;
 
     try {
         const res = await client.patch(uri, undefined, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -335,7 +336,7 @@ export const uncancelWorkItem = async (workItemId) => {
     }
 }
 
-export const updateWorkItem = async (workItemId, processingOrderId, tenant) => {
+export const updateWorkItem = async (workItemId, processingOrderId, tenantName = null) => {
     const uri = `/api/v1/work-items/${workItemId}`;
 
     try {
@@ -346,7 +347,7 @@ export const updateWorkItem = async (workItemId, processingOrderId, tenant) => {
             }, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': tenant ?? DEFAULT_TENANT,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
@@ -357,7 +358,7 @@ export const updateWorkItem = async (workItemId, processingOrderId, tenant) => {
     }
 }
 
-export const assignSkillToExpert = async (tenant, expertUserId, skillName, locationValues) => {
+export const assignSkillToExpert = async (expertUserId, skillName, locationValues, tenantName = null) => {
     const uri = `/api/v1/experts/${expertUserId}/assign-skills`;
 
     const request = locationValues.map(locationValue => ({
@@ -372,7 +373,7 @@ export const assignSkillToExpert = async (tenant, expertUserId, skillName, locat
             {
                 headers: {
                     ...(await getAuthHeaders()),
-                    'x-lz-current-tenant-name': tenant ?? DEFAULT_TENANT,
+                    'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
                 },
             },
         );
@@ -384,14 +385,14 @@ export const assignSkillToExpert = async (tenant, expertUserId, skillName, locat
     }
 }
 
-const getOutdatedWorkItemIds = async (tenant, workTemplateName, page = 0, size = 100) => {
+const getOutdatedWorkItemIds = async (workTemplateName, page = 0, size = 100, tenantName = null) => {
     const uri = `api/v1/work-items/outdated`;
 
     try {
         const res = await client.get(uri, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': tenant,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
             params: {
                 'work-template': workTemplateName,
@@ -407,14 +408,14 @@ const getOutdatedWorkItemIds = async (tenant, workTemplateName, page = 0, size =
     }
 }
 
-export const getAllOutdatedWorkItemIds = async (tenant, workTemplateName) => {
+export const getAllOutdatedWorkItemIds = async (workTemplateName, tenantName = null) => {
     const workItemIdSet = new Set();
     let totalPage = 0;
     let page = 0;
 
     try {
         do {
-            const res = await getOutdatedWorkItemIds(tenant, workTemplateName, page, 100);
+            const res = await getOutdatedWorkItemIds(workTemplateName, page, 100, tenantName);
             if (res == null) { return workItemIdSet; }
 
             totalPage = res.totalPages;
@@ -431,14 +432,14 @@ export const getAllOutdatedWorkItemIds = async (tenant, workTemplateName) => {
     return workItemIdSet;
 }
 
-export const syncWorkItem = async (tenant, workItemId) => {
+export const syncWorkItem = async (workItemId, tenantName = null) => {
     const uri = `api/v1/work-items/${workItemId}/sync`;
 
     try {
         const res = await client.post(uri, null, {
             headers: {
                 ...(await getAuthHeaders()),
-                'x-lz-current-tenant-name': tenant,
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
             },
         });
 
