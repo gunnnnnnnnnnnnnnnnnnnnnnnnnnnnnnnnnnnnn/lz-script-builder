@@ -6,6 +6,7 @@ import { getFormattedTimestamp } from './util.js';
 import * as ecpApi from './api/ecpApi.js';
 import * as ipApi from './api/intellectualPropertyApi.js';
 import * as authApi from './api/authApi.js';
+import * as answerBankApi from './api/answerBankApi.js';
 import { ENVIRONMENT } from './config.js';
 import { PROCESSING_ORDERS } from './input/migrate-trademark-orders-input.js';
 
@@ -74,6 +75,24 @@ const findOrCreateWorkItem = async (processingOrderId, accountId) => {
     return {
         workItemId: existingWorkItems.content[0].id,
         isNewWorkItemCreated: false,
+    };
+};
+
+/**
+ * Fetch PROOFER data from Answer Bank
+ * @param {string} processingOrderId 
+ * @returns {Promise<{ prooferData: object }>}
+ */
+const fetchProoferData = async (processingOrderId) => {
+    const answers = await answerBankApi.getAnswersByProcessingOrderId(processingOrderId);
+    
+    if (!answers || answers.length === 0) {
+        throw new Error(`No PROOFER data found for processingOrderId: ${processingOrderId}`);
+    }
+
+    // Return the first answer's questionnaire data
+    return {
+        prooferData: answers[0].questionnaireFieldGroupAnswers,
     };
 };
 
@@ -164,6 +183,10 @@ const process = async (order, index, total) => {
             payload.processingOrderId
         );
         payload = { ...payload, ...productResult };
+
+        // Step 3: Fetch PROOFER data from Answer Bank
+        const prooferResult = await fetchProoferData(payload.processingOrderId);
+        payload = { ...payload, ...prooferResult };
 
         // TODO: Implement next steps here
 

@@ -1,0 +1,107 @@
+{
+    "owners": [
+      {
+        "owner": {
+          "corporationName": "ALTM Company Corp.",
+          "incorporationState": "California"
+        },
+        "ownerAddress": {
+          "ownerCity": "Glendale",
+          "ownerState": "California",
+          "ownerCountry": "United States",
+          "ownerZipCode": "91203",
+          "ownerAddressLine1": "101 N Brand Blvd"
+        },
+        "ownerSelection": {
+          "ownerType": "juristic",
+          "entityType": "Corporation",
+          "incorporationCountry": "United States"
+        },
+        "individualOwner": null,
+        "ownerPhoneNumber": "+1 (303) 444-4444",
+        "ownerEmailAddress": "mbulant+altmdev@legalzoom.com"
+      }
+    ],
+    "attorney": {
+      "firmCountry": "United States",
+      "primaryPhone": "+1 (737) 220-0666)",
+      "lawFirm": "LZ Legal Services",
+      "lastName": "Garner",
+      "firstName": "Mary",
+      "middleName": "",
+      "firmZipCode": "85004",
+      "docketNumber": "E515701269",
+      "emailAddress": "tm@lzlegalservices.com",
+      "attorneySelect": "20896758",
+      "firmAddressLine1": "2828 N. Central Ave.",
+      "firmAddressLine2": "PMB #1510",
+      "barYearOfAdmission": "2024",
+      "barMembershipNumber": "039402",
+      "barRegistrationState": "Arizona",
+      "barStandingConfirmation": true,
+      "otherAppointedAttorneys": "Mary Garner, Monica Martinez, Lauren C. Concepcion and all other LZ Legal Services, LLC trademark attorneys",
+      "firmCity": "Phoenix",
+      "firmState": "Arizona"
+    },
+    "signatory": {
+      "signatoryName": "John Robert Doe Sr.",
+      "signatoryPosition": "ceo",
+      "otherSignatoryPosition": null
+    },
+    "markSelection": {
+      "markFormat": "standard_character",
+      "nameAndLikeness": {
+        "containsNameLikeness": "no"
+      },
+      "standardCharacterMark": {
+        "markText": "Brand Trademark to Protect 10142025"
+      },
+      "translationTransliteration": [
+        {
+          "hasNonEnglishWords": "no"
+        }
+      ],
+      "translationAndTransliterationIntakeQuestionnaire": {
+        "translationAndTransliteration_IntakePlaceholder": null
+      }
+    },
+    "goodsAndServices": {
+      "filingBasis": "no",
+      "additionalDataSection": {
+        "competitorExample": "Optional competitor example value from the lz website",
+        "clientTrademarkUse": "Filing Basis: No, but I intend to use it in the future.\nDate of First Sale: N/A\nClass Number: Class 25: Clothing, footwear, and headgear\nList Goods or Services: Description for the Trademark goods and services\nURL Associated with Trademark: N/A"
+      },
+      "_goodsAndServicesSearch": [
+        {
+          "classId": "025",
+          "inputType": "search",
+          "specimens": [],
+          "description": "Mountaineering shoes",
+          "filingBasis": "Section 2(b) Intent to use",
+          "templateFields": [],
+          "usptoDescriptionId": "34392",
+          "descriptionTemplate": "Mountaineering shoes"
+        }
+      ],
+      "howDoesTheClientPlanToUseTheirTrademarkSection": {
+        "howDoesTheClientPlanToUseTheirTrademark": "No, but I intend to use it in the future."
+      }
+    },
+    "disclaimerSection": {
+      "disclaimerText": "disclaimer wording for testing"
+    },
+    "priorRegistrationsSection": {
+      "registrations": [
+        {
+          "registrationNumber": "2770041"
+        },
+        {
+          "registrationNumber": "2770042"
+        }
+      ]
+    },
+    "selectAdditionalInformation": [
+      "disclaimer",
+      "priorRegistrations"
+    ]
+  }

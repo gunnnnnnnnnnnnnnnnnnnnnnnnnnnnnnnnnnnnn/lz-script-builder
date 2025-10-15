@@ -15,6 +15,19 @@ const client = axios.create({
  * @param {string} productType - Optional product type filter (e.g., 'TRADEMARK')
  * @param {string} accountId - Optional account ID filter
  * @returns {Promise<Array>} - Response data containing products (empty array if none found)
+ * 
+ * @example Response structure:
+ * [{
+ *   id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+ *   accountId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+ *   customerId: "string",
+ *   processingOrderId: "string",
+ *   workItemId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+ *   type: "TRADEMARK",
+ *   status: "string",
+ *   parties: [...],
+ *   ...
+ * }]
  */
 export const findProducts = async (
     workItemId = null,
@@ -69,6 +82,62 @@ export const createProduct = async (productData) => {
         return res?.data;
     } catch (e) {
         console.error('Failed to create product', e.message);
+        throw e;
+    }
+};
+
+/**
+ * Create or update answer data for a product
+ * Upserts transformed questionnaire data into IP service
+ * 
+ * @param {string} productId - Product ID
+ * @param {string} dataType - Data type (e.g., 'TRADEMARK_EXPERT')
+ * @param {object} data - Answer data object (TRADEMARK_EXPERT format with JSON Pointer structure)
+ * @param {boolean} isCompleted - Whether the answer is completed (default: false)
+ * @param {boolean} isPostUpdateProcessSkipped - Whether to skip post-update process (default: false)
+ * @returns {Promise<object>} - Created/updated answer data
+ * 
+ * @example Request body:
+ * {
+ *   productId: "uuid",
+ *   dataType: "TRADEMARK_EXPERT",
+ *   data: {
+ *     attorney: { firstName: "John", ... },
+ *     owners: [{ ownerSelection: { ownerType: "individual" }, ... }],
+ *     markSelection: { markFormat: "standard", ... },
+ *     ...
+ *   }
+ * }
+ * 
+ * @see /references/sample-answer-data.json for data structure example
+ * @see /references/data mapper info.csv for field mappings
+ */
+export const createOrUpdateAnswer = async (
+    productId,
+    dataType,
+    data,
+    isCompleted = false,
+    isPostUpdateProcessSkipped = false
+) => {
+    const uri = `/api/v1/answers?isCompleted=${isCompleted}&isPostUpdateProcessSkipped=${isPostUpdateProcessSkipped}`;
+
+    const requestBody = {
+        productId,
+        dataType,
+        data,
+    };
+
+    try {
+        const res = await client.post(uri, requestBody, {
+            headers: {
+                ...(await getAuthHeaders()),
+                'Content-Type': 'application/json',
+            },
+        });
+
+        return res?.data;
+    } catch (e) {
+        console.error('Failed to create or update answer', e.message);
         throw e;
     }
 };
