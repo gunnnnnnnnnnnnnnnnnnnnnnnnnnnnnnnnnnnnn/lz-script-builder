@@ -13,12 +13,31 @@ import { ENVIRONMENT } from './config.js';
 
 const limit = pLimit(5);
 
+const IS_DEBUG = false;
+
+
 /** Migration Setup */
 const TENANT = 'LEGAL_PLANS';
 
 const CONSULTATION_MIGRATION_INPUT = JSON.parse(fs.readFileSync('./consultationMigrationInput.json'));
 
+var totalWorkItems = 0;
+var totalForceClosed = 0;
+
 const createConsultationWorkItem = async (payload) => {
+    totalWorkItems++;
+
+    if (IS_DEBUG) {
+        return {
+            workItemId: '-',
+            expertUserId: '-',
+            expertFirstName: '-',
+            expertLastName: '-',
+            topic: '-',
+            appointmentDate: '-',
+        };
+    }
+
     const res = await ecpApi.syncConsultation(
         TENANT,
         payload.accountId,
@@ -26,12 +45,12 @@ const createConsultationWorkItem = async (payload) => {
     );
 
     return {
-        workItemId: res.workItemId,
-        expertUserId: res.expert?.lzUserId,
-        expertFirstName: res.expert?.firstName,
-        expertLastName: res.expert?.lastName,
-        topic: res.topic?.name,
-        appointmentDate: res.dateTime
+        workItemId: res?.workItemId ?? 'not created',
+        expertUserId: res?.expert?.lzUserId ?? '-',
+        expertFirstName: res?.expert?.firstName ?? '-',
+        expertLastName: res?.expert?.lastName ?? '-',
+        topic: res?.topic?.name ?? payload.topic ?? '-',
+        appointmentDate: res?.dateTime ?? payload.appointmentDate ?? '-',
     };
 };
 
@@ -41,17 +60,7 @@ const getAccountIdByOrderId = async (payload) => {
         const orderGroup = (await ordersApi.getOrderGroup(order.orderGroupId, payload.customerId));
 
         if (!orderGroup.accountId) {
-            const userInfo = await authApi.getUserByUserId(payload.customerId);
-            const individualAccountId = userInfo.accountMembership?.find(a => a.accountType == 'INDIVIDUAL')?.accountId;
-
-            if (!individualAccountId) {
-                throw new Error('no account');
-            }
-
-            return {
-                accountId: individualAccountId,
-                accountIdSource: 'individual',
-            };
+            throw new Error('no account id by order');
         }
 
         return {
@@ -59,11 +68,26 @@ const getAccountIdByOrderId = async (payload) => {
             accountIdSource: 'orderGroup',
         };
     } catch (e) {
+        const userInfo = await authApi.getUserByUserId(payload.customerId);
+        const individualAccountId = userInfo.accountMembership?.find(a => a.accountType == 'INDIVIDUAL')?.accountId;
+        if (individualAccountId) {
+            return {
+                accountId: individualAccountId,
+                accountIdSource: 'individual',
+            };
+        }
+
         throw new Error(`account not found by order (orderId: ${payload.orderId}, customerId: ${payload.customerId}, err: ${e.message}).`);
     }
 };
 
 const forceCompleteConsultation = async (payload) => {
+    totalForceClosed++;
+
+    if (IS_DEBUG) {
+        return {};
+    }
+
     const consultationId = payload.consultationId;
     const customerId = payload.customerId;
     const consultationDetail = await advisorViewApi.getConsultationById(consultationId, customerId);
@@ -74,13 +98,13 @@ const forceCompleteConsultation = async (payload) => {
 
     await advisorAggregateApi.syncConsultation(
         'Completed',
-        consultationDetail.advisorDetails.id,
-        consultationDetail.advisorDetails.firstName,
-        consultationDetail.advisorDetails.lastName,
-        consultationDetail.advisorDetails.firmId,
-        consultationDetail.appointment.timezone,
-        consultationDetail.appointment.appointmentDate,
-        consultationDetail.appointment.duration,
+        consultationDetail.advisorDetails?.id,
+        consultationDetail.advisorDetails?.firstName,
+        consultationDetail.advisorDetails?.lastName,
+        consultationDetail.advisorDetails?.firmId,
+        consultationDetail.appointment?.timezone,
+        consultationDetail.appointment?.appointmentDate,
+        consultationDetail.appointment?.duration,
         'NoFurtherAction',
         consultationDetail.confirmationNumber,
         consultationId,
@@ -130,35 +154,103 @@ const process = async (payload, index, total) => {
     }
 };
 
+const getConsultations = async (customer, expectedFirmId) => {
+    const [
+        consultationsFromConsultationsApi,
+        consultationsFromAdvisorViewApi,
+    ] = await Promise.all([
+        consultationsApi.getConsultationsByCustomerId(customer.customerId),
+        advisorViewApi.getConsultationsByCustomerId(customer.customerId),
+    ]);
+
+    const map = new Map();
+
+    for (const consultation of consultationsFromConsultationsApi?.appointmentHistory ?? []) {
+        map.set(consultation.consultationRequestId, {
+            customerId: customer.customerId,
+            customerEmail: customer.email,
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+            consultationId: consultation.consultationRequestId,
+            orderId: consultation.orderId,
+            processingOrderId: consultation.processingOrderId,
+            timeZone: consultation.timeZone,
+            confirmationNumber: consultation.timeTradeApptConfNumber,
+            _isDone: false
+        });
+    }
+
+    for (const consultation of consultationsFromAdvisorViewApi ?? []) {
+        if (consultation.advisorDetails?.firmId != expectedFirmId) {
+            continue;
+        }
+
+        if (map.has(consultation.id)) {
+            map.set(consultation.id, {
+                ...map.get(consultation.id),
+                status: consultation.status,
+                appointmentDate: consultation.appointment?.appointmentDate,
+                topic: `${consultation.topic?.name}(${consultation.topic?.referenceId})[${consultation.topic?.planType}]`,
+                _isDone: true,
+            });
+        } else {
+            map.set(consultation.id, {
+                customerId: customer.customerId,
+                customerEmail: customer.email,
+                firstName: customer.firstName,
+                lastName: customer.lastName,
+                consultationId: consultation.id,
+                timeZone: consultation.appointment?.timezone,
+                confirmationNumber: consultation.confirmationNumber,
+                status: consultation.status,
+                appointmentDate: consultation.appointment?.appointmentDate,
+                topic: `${consultation.topic?.name}(${consultation.topic?.referenceId})[${consultation.topic?.planType}]`,
+                _isDone: true,
+            });
+        }
+    }
+
+    const result = [];
+    for (const consultation of map.values()) {
+        if (consultation._isDone) {
+            if (consultation.status == 'Open') {
+                result.push(consultation);
+            }
+            continue;
+        }
+
+        const consultationDetail = await advisorViewApi.getConsultationById(consultation.consultationId, customer.customerId);
+        if (!consultationDetail) continue;
+        if (consultationDetail.status == 'Open' && consultationDetail.advisorDetails?.firmId == expectedFirmId) {
+            result.push({
+                ...consultation,
+                status: consultation.status,
+                appointmentDate: consultation.appointment?.appointmentDate,
+                topic: `${consultation.topic?.name}(${consultation.topic?.referenceId})[${consultation.topic?.planType}]`,
+                _isDone: true,
+            });
+        }
+    }
+
+    return result;
+}
+
+
 const getBatchPayloads = async (firmId) => {
     const payloads = [];
     const customers = (await advisorViewApi.getConsultationCustomersByFirm(firmId));//splice(1, 1);
 
-    for (const customer of customers) {
-        const consultations = (await consultationsApi.getConsultationsByCustomerId(customer.customerId))?.appointmentHistory ?? [];
+    // for (const customer of customers) {
+    //     // const consultations = (await consultationsApi.getConsultationsByCustomerId(customer.customerId))?.appointmentHistory ?? [];
+    //     const consultations = await getConsultations(customer, firmId);
+    //     payloads.push(...consultations);
+    //     console.log(`fetched ${consultations.length} consultations by customer: ${customer.customerId}`);
+    // }
 
-        for (const consultation of consultations) {
-            const consultationDetail = await advisorViewApi.getConsultationById(consultation.consultationRequestId, customer.customerId);
-
-            if (
-                consultationDetail?.advisorDetails?.firmId?.toLocaleLowerCase() == firmId.toLocaleLowerCase() &&
-                consultationDetail?.status == 'Open'
-            ) {
-                payloads.push({
-                    customerId: customer.customerId,
-                    customerEmail: customer.email,
-                    firstName: customer.firstName,
-                    lastName: customer.lastName,
-                    consultationId: consultation.consultationRequestId,
-                    orderId: consultation.orderId,
-                    processingOrderId: consultation.processingOrderId,
-                    timeZone: consultation.timeZone,
-                    confirmationNumber: consultation.timeTradeApptConfNumber,
-                    appointmentDate: consultationDetail.appointment?.appointmentDate,
-                    topic: `${consultationDetail.topic?.name}(${consultationDetail.topic?.referenceId})[${consultationDetail.topic?.planType}]`,
-                });
-            }
-        }
+    const promises = customers.map((customer) => limit(() => getConsultations(customer, firmId)));
+    const result = await Promise.all(promises);
+    for (const r of result) {
+        payloads.push(...r);
     }
 
     return payloads;
@@ -228,7 +320,15 @@ const runScript = async (migrationName, cutoffDate, firmName, firmId, firmAccoun
 (async () => {
     for (const { name, cutoffDate, firms } of CONSULTATION_MIGRATION_INPUT) {
         for (const { firmName, firmId, firmAccountId } of firms) {
+            totalWorkItems = 0;
+            totalForceClosed = 0;
             await runScript(name, cutoffDate, firmName, firmId, firmAccountId);
+            console.log(`--------------------------------`);
+            console.log(`${firmName}`);
+            console.log(`Total Work Items: ${totalWorkItems}`);
+            console.log(`Total Force Closed: ${totalForceClosed}`);
+            console.log(`Total: ${totalWorkItems + totalForceClosed}`);
         }
     }
+
 })();

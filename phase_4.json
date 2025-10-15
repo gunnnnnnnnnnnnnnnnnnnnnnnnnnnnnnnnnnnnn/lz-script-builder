@@ -1,0 +1,40 @@
+[
+    {
+        "name": "phase 4.1",
+        "cutoffDate": "2025-06-02T00:00:00Z",
+        "firms": [
+            {
+                "firmName": "Fears Law PLLC",
+                "firmAccountId": "e6a1c4cd-bb98-4566-9826-ee85ffcbfba2",
+                "firmId": "9acd0574-8a29-4b18-a2b4-3a727d7af064"
+            },
+            {
+                "firmName": "McGrath & Spielberger, PLLC",
+                "firmAccountId": "e7d6f614-5dd8-4c48-89a6-3fe26918c6d0",
+                "firmId": "5b688aa1-1093-48be-9496-42a9b17a8d67"
+            }
+        ]
+    },
+    {
+        "name": "phase 4.2",
+        "cutoffDate": "2025-06-03T00:00:00Z",
+        "firms": [
+            {
+                "firmName": "Dunlap Bennet and Ludwig PLLC",
+                "firmAccountId": "cec16432-339d-4782-8714-32bf5c4e91bd",
+                "firmId": "abafbd02-d5a9-4560-9e8b-3a3c5e702d9d"
+            }
+        ]
+    },
+    {
+        "name": "phase 4.3",
+        "cutoffDate": "2025-06-05T00:00:00Z",
+        "firms": [
+            {
+                "firmName": "Arroyo Law Group, LLP",
+                "firmAccountId": "6000d8c9-2c82-4276-9cf8-7a6ee6a385b2",
+                "firmId": "d7ec0a75-3a02-43af-934f-af60b5fa521c"
+            }
+        ]
+    }
+]

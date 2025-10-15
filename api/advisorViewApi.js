@@ -3,7 +3,7 @@ import config from '../config.js';
 import { getAuthHeaders } from './authApi.js';
 
 const { ADVISOR_VIEW_HOST } = config;
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 50; // 50 is max
 
 const client = axios.create({
     baseURL: ADVISOR_VIEW_HOST,
@@ -103,6 +103,7 @@ export const getConsultationCustomersByFirm = async (firmId) => {
 
     try {
         do {
+            console.log(`getConsultationCustomersByFirm page: ${page}`);
             const res = await getPaginatedConsultationCustomersByFirm(firmId, page);
             if (res == null) { return result; }
 

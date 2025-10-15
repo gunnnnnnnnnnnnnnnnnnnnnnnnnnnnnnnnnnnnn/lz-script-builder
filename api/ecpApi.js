@@ -124,6 +124,11 @@ export const syncConsultation = async (tenant, accountId, confirmationNumber) =>
 
         return res?.data[0];
     } catch (e) {
+        if (e.response?.data?.message?.includes('duplicate key value violates unique constraint')) {
+            console.error('failed to sync consultation. work item exists with different account id');
+            return null;
+        }
+
         console.error('failed to sync consultation', e);
         throw e;
     }

@@ -225,16 +225,16 @@ export const updatePartnerAttribute = async (userId, email, advisorId, advisorFi
 };
 
 const createPassword = () => {
-    if (ENVIRONMENT == 'p') {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+    // if (ENVIRONMENT == 'p') {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
 
-        let password = '';
-        for (let i = 0; i < 12; i++) {
-            const randomIndex = Math.floor(Math.random() * chars.length);
-            password += chars[randomIndex];
-        }
-        return password;
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+        const randomIndex = Math.floor(Math.random() * chars.length);
+        password += chars[randomIndex];
     }
+    return password;
+    // }
 
-    return 'test123';
+    // return 'test123';
 }

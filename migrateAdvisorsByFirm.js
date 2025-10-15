@@ -11,10 +11,10 @@ const limit = pLimit(5);
 
 /** Migration Setup */
 const TENANT = 'LEGAL_PLANS';
-const EXPERT_ROLE_NAME = 'expert';
+const EXPERT_ROLE_NAME = 'expert'; // "LAD"
 const LEGAL_PLAN_ATTORNEY_SKILL_NAME = 'LP_ATTORNEY';
-const FIRM_ID = '565e9855-6e5f-49a6-ba56-315e91e7cb05';             // TODO: change per request
-const FIRM_ACCOUNT_ID = '8a5b60fa-b181-48a1-9c0c-d616132ff858';     // TODO: change per request
+const FIRM_ACCOUNT_ID = '8024ba96-cd08-4b4f-9f86-92bb2fcc96ec';     // TODO: change per request
+const FIRM_ID = 'a637f486-14cd-44bb-b05d-3a9e7226fbb7';             // TODO: change per request
 let EXPERT_ROLE_ID = 'NOT SET';                                     // set during run time
 
 const FILE_NAME = `${ENVIRONMENT} - Advisor Migration (${FIRM_ACCOUNT_ID}) [${getFormattedTimestamp()}].csv`;
