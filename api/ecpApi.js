@@ -449,3 +449,174 @@ export const syncWorkItem = async (workItemId, tenantName = null) => {
         throw e;
     }
 }
+
+/**
+ * Retrieves internal notes for a specific work item.
+ * 
+ * @param {string} workItemId - The ID of the work item
+ * @param {string|null} tenantName - Optional tenant name (defaults to DEFAULT_TENANT if not provided)
+ * @returns {Promise<Array>} Array of internal note objects
+ * 
+ * @example
+ * // Sample response structure:
+ * [
+ *   {
+ *     "id": "8639fea9-f3ea-40b0-8137-0f0ce50fecc0",
+ *     "createdByExpertId": "15686667",
+ *     "note": null,
+ *     "createdAt": "2025-10-16T17:22:22.934Z",
+ *     "jsonNote": { ... },
+ *     "createdBy": { ... },
+ *     "firmAccount": { ... },
+ *     "isPinned": false,
+ *     "pinnedBy": null,
+ *     "updatedBy": { ... },
+ *     "updatedAt": "2025-10-16T17:47:06.304288728Z"
+ *   }
+ * ]
+ */
+export const getInternalNotesByWorkItemId = async (workItemId, tenantName = null) => {
+    const uri = `api/v1/internal-notes`;
+
+    try {
+        const res = await client.get(uri, {
+            headers: {
+                ...(await getAuthHeaders()),
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
+            },
+            params: {
+                workItemId,
+            },
+        });
+
+        return res?.data || [];
+    } catch (e) {
+        console.error(`Failed to get internal notes for workItemId ${workItemId}`, e);
+        throw e;
+    }
+}
+
+/**
+ * Updates an internal note by its ID.
+ * 
+ * @param {string} noteId - The ID of the internal note to update
+ * @param {Object} jsonNote - The jsonNote object containing the note structure
+ * @param {string|null} tenantName - Optional tenant name (defaults to DEFAULT_TENANT if not provided)
+ * @returns {Promise<Object>} Updated internal note object
+ * 
+ * @example
+ * // Sample request body structure:
+ * const jsonNote = {
+ *   root: {
+ *     children: [
+ *       {
+ *         children: [
+ *           {
+ *             detail: 0,
+ *             format: 1,
+ *             mode: "normal",
+ *             style: "",
+ *             text: "Mɪɢʀᴀᴛᴇᴅ Fʀᴏᴍ Pʀᴏᴏꜰᴇʀ",
+ *             type: "text",
+ *             version: 1
+ *           }
+ *         ],
+ *         direction: "ltr",
+ *         format: "",
+ *         indent: 0,
+ *         type: "paragraph",
+ *         version: 1
+ *       }
+ *     ],
+ *     direction: "ltr",
+ *     format: "",
+ *     indent: 0,
+ *     type: "root",
+ *     version: 1
+ *   }
+ * };
+ */
+export const updateInternalNoteById = async (noteId, jsonNote, tenantName = null) => {
+    const uri = `api/v1/internal-notes/${noteId}`;
+
+    try {
+        const res = await client.patch(uri, {
+            jsonNote,
+        }, {
+            headers: {
+                ...(await getAuthHeaders()),
+                'Content-Type': 'application/json',
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
+            },
+        });
+
+        return res?.data;
+    } catch (e) {
+        console.error(`Failed to update internal note ${noteId}`, e);
+        throw e;
+    }
+}
+
+/**
+ * Creates a new internal note and attaches it to a work item.
+ * 
+ * @param {string} workItemId - The ID of the work item to attach the note to
+ * @param {Object} jsonNote - The jsonNote object containing the note structure
+ * @param {string|null} tenantName - Optional tenant name (defaults to DEFAULT_TENANT if not provided)
+ * @returns {Promise<Object>} Created internal note object
+ * 
+ * @example
+ * // Sample request body structure:
+ * const jsonNote = {
+ *   root: {
+ *     children: [
+ *       {
+ *         children: [
+ *           {
+ *             detail: 0,
+ *             format: 1,
+ *             mode: "normal",
+ *             style: "",
+ *             text: "Migrated from Proofer",
+ *             type: "text",
+ *             version: 1
+ *           }
+ *         ],
+ *         direction: "ltr",
+ *         format: "",
+ *         indent: 0,
+ *         type: "paragraph",
+ *         version: 1
+ *       }
+ *     ],
+ *     direction: "ltr",
+ *     format: "",
+ *     indent: 0,
+ *     type: "root",
+ *     version: 1
+ *   }
+ * };
+ * 
+ * const note = await createInternalNoteToWorkItem(workItemId, jsonNote, 'altm');
+ */
+export const createInternalNoteToWorkItem = async (workItemId, jsonNote, tenantName = null) => {
+    const uri = `api/v1/internal-notes/add-to-work-item`;
+
+    try {
+        const res = await client.post(uri, {
+            workItemId,
+            jsonNote,
+        }, {
+            headers: {
+                ...(await getAuthHeaders()),
+                'Content-Type': 'application/json',
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
+            },
+        });
+
+        return res?.data;
+    } catch (e) {
+        console.error(`Failed to create internal note for workItemId ${workItemId}`, e);
+        throw e;
+    }
+}
