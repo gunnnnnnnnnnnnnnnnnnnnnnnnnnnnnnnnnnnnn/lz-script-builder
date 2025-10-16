@@ -53,22 +53,29 @@ import {
  * }
  */
 export const mapProoferToTrademarkExpert = (prooferData) => {
-	// Create lookup maps for easy field access
-	const fields = createFieldLookup(prooferData.fieldAnswers);
-	const groups = createGroupLookup(prooferData.groupAnswers);
+	try {
+		// Create lookup maps for easy field access
+		const fields = createFieldLookup(prooferData.fieldAnswers);
+		const groups = createGroupLookup(prooferData.groupAnswers);
 
-	const trademarkExpertData = {
-		attorney: buildAttorney(fields),
-		owners: buildOwners(fields),
-		markSelection: buildMarkSelection(fields),
-		goodsAndServices: buildGoodsAndServices(fields),
-		signatory: buildSignatory(fields, groups),
-		disclaimerSection: buildDisclaimerSection(fields),
-		meaningSignificanceSection: buildMeaningSignificanceSection(fields),
-		section2f: buildSection2f(fields),
-	};
+		const trademarkExpertData = {
+			attorney: buildAttorney(fields),
+			owners: buildOwners(fields),
+			markSelection: buildMarkSelection(fields),
+			goodsAndServices: buildGoodsAndServices(fields),
+			signatory: buildSignatory(fields, groups),
+			disclaimerSection: buildDisclaimerSection(fields),
+			meaningSignificanceSection: buildMeaningSignificanceSection(fields),
+			section2f: buildSection2f(fields),
+		};
 
-	return trademarkExpertData;
+		return trademarkExpertData;
+	} catch (error) {
+		// Rethrow with more context about the mapping failure
+		const errorMessage = `Failed to map PROOFER data to TRADEMARK_EXPERT format: ${error.message}`;
+		console.error(errorMessage, error);
+		throw new Error(errorMessage);
+	}
 };
 
 /**

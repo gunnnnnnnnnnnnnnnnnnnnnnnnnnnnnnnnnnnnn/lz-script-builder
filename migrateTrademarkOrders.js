@@ -9,6 +9,7 @@ import * as authApi from './api/authApi.js';
 import * as answerBankApi from './api/answerBankApi.js';
 import { ENVIRONMENT } from './config.js';
 import { PROCESSING_ORDERS } from './input/migrate-trademark-orders-input.js';
+import { mapProoferToTrademarkExpert } from './trademark-mapper/trademarkDataMapper.js';
 
 const limit = pLimit(5);
 
@@ -16,6 +17,7 @@ const limit = pLimit(5);
 const TENANT_NAME = 'altm';
 const WORK_TEMPLATE_NAME = 'ALTM_PRE_FILING_V3';
 const PRODUCT_TYPE = 'TRADEMARK';
+const TRADEMARK_EXPERT_ANSWER_DATA_TYPE = 'TRADEMARK_EXPERT';
 
 const FILE_NAME = `${ENVIRONMENT} - Trademark Order Migration [${getFormattedTimestamp()}].csv`;
 
@@ -188,7 +190,15 @@ const process = async (order, index, total) => {
         const prooferResult = await fetchProoferData(payload.processingOrderId);
         payload = { ...payload, ...prooferResult };
 
-        // TODO: Implement next steps here
+        // Step 4: Map PROOFER data to TRADEMARK_EXPERT format
+        const trademarkExpertData = mapProoferToTrademarkExpert(payload.prooferData);
+        payload = { 
+            ...payload, 
+            trademarkExpertData,
+            mappingComplete: true 
+        };
+
+        // TODO: Step 5 - Create/update answer data in IP Service
 
         return {
             ...payload,
@@ -222,7 +232,8 @@ const process = async (order, index, total) => {
             { id: 'isNewWorkItemCreated', title: 'Is New Work Item Created' },
             { id: 'productId', title: 'Product ID' },
             { id: 'isNewProductCreated', title: 'Is New Product Created' },
-            // TODO: Add more header columns as needed
+            { id: 'mappingComplete', title: 'Mapping Complete' },
+            // TODO: Add answer creation status columns
             { id: 'isComplete', title: 'Is Complete' },
             { id: 'error', title: 'Error' },
         ],
