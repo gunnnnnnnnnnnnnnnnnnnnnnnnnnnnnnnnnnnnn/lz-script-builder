@@ -10,7 +10,7 @@ import * as answerBankApi from './api/answerBankApi.js';
 import { ENVIRONMENT } from './config.js';
 import { PROCESSING_ORDERS } from './input/migrate-trademark-orders-input.js';
 import { mapProoferToTrademarkExpert } from './trademark-mapper/trademarkDataMapper.js';
-import { buildInternalNoteFromProofer, MIGRATED_FROM_PROOFER_TEXT } from './trademark-mapper/internal-note-mapper.js';
+import { buildInternalNoteFromProofer, MIGRATED_FROM_PROOFER_TEXT } from './trademark-mapper/internalNoteMapper.js';
 
 const limit = pLimit(5);
 
