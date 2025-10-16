@@ -39,9 +39,9 @@ const createConsultationWorkItem = async (payload) => {
     }
 
     const res = await ecpApi.syncConsultation(
-        TENANT,
         payload.accountId,
         payload.confirmationNumber,
+        TENANT,
     );
 
     return {

@@ -139,3 +139,4 @@ ehthumbs.db
 # no need to add the csv file that migration script generates
 *.csv
 /output
+/references
