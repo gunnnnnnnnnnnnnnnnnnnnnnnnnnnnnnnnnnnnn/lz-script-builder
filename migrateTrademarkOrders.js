@@ -10,6 +10,7 @@ import * as answerBankApi from './api/answerBankApi.js';
 import { ENVIRONMENT } from './config.js';
 import { PROCESSING_ORDERS } from './input/migrate-trademark-orders-input.js';
 import { mapProoferToTrademarkExpert } from './trademark-mapper/trademarkDataMapper.js';
+import { buildInternalNoteFromProofer, MIGRATED_FROM_PROOFER_TEXT } from './trademark-mapper/internal-note-mapper.js';
 
 const limit = pLimit(5);
 
@@ -154,6 +155,40 @@ const findOrCreateTrademarkProduct = async (workItemId, accountId, customerId, p
 };
 
 /**
+ * Check for existing internal note and create one if needed
+ * @param {string} workItemId 
+ * @param {object} prooferData 
+ * @returns {Promise<{ internalNoteCreated: boolean, internalNoteId?: string }>}
+ */
+const createInternalNoteIfNeeded = async (workItemId, prooferData) => {
+    // Get existing internal notes for the work item
+    const existingNotes = await ecpApi.getInternalNotesByWorkItemId(workItemId, TENANT_NAME);
+
+    // Check if any note contains "Migrated from Proofer"
+    const existingMigratedNote = existingNotes.find(note => {
+        const firstParagraphText = note.jsonNote?.root?.children?.[0]?.children?.[0]?.text;
+        return firstParagraphText === MIGRATED_FROM_PROOFER_TEXT;
+    });
+
+    if (existingMigratedNote) {
+        console.log(`Internal note with "${MIGRATED_FROM_PROOFER_TEXT}" already exists for workItemId ${workItemId}, skipping...`);
+        return {
+            internalNoteCreated: false,
+            internalNoteId: existingMigratedNote.id,
+        };
+    }
+
+    // Create new internal note
+    const jsonNote = buildInternalNoteFromProofer(prooferData);
+    const newNote = await ecpApi.createInternalNoteToWorkItem(workItemId, jsonNote, TENANT_NAME);
+
+    return {
+        internalNoteCreated: true,
+        internalNoteId: newNote?.id,
+    };
+};
+
+/**
  * Process a single processing order
  * @param {object} order - { processingOrderId: string, accountId: string }
  * @param {number} index 
@@ -212,6 +247,13 @@ const process = async (order, index, total) => {
             answerCreated: true,
         };
 
+        // Step 6: Create internal note if it doesn't exist
+        const internalNoteResult = await createInternalNoteIfNeeded(
+            payload.workItemId,
+            payload.prooferData
+        );
+        payload = { ...payload, ...internalNoteResult };
+
         return {
             ...payload,
             isComplete: true
@@ -247,6 +289,8 @@ const process = async (order, index, total) => {
             { id: 'mappingComplete', title: 'Mapping Complete' },
             { id: 'answerId', title: 'Answer ID' },
             { id: 'answerCreated', title: 'Answer Created' },
+            { id: 'internalNoteCreated', title: 'Internal Note Created' },
+            { id: 'internalNoteId', title: 'Internal Note ID' },
             { id: 'isComplete', title: 'Is Complete' },
             { id: 'error', title: 'Error' },
         ],
