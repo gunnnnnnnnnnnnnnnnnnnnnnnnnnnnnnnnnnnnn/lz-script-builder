@@ -198,7 +198,19 @@ const process = async (order, index, total) => {
             mappingComplete: true 
         };
 
-        // TODO: Step 5 - Create/update answer data in IP Service
+        // Step 5: Create/update answer data in IP Service
+        const answerResponse = await ipApi.createOrUpdateAnswer(
+            payload.productId,
+            TRADEMARK_EXPERT_ANSWER_DATA_TYPE,
+            trademarkExpertData,
+            false, // isCompleted
+            false  // isPostUpdateProcessSkipped
+        );
+        payload = {
+            ...payload,
+            answerId: answerResponse?.id,
+            answerCreated: true,
+        };
 
         return {
             ...payload,
@@ -233,7 +245,8 @@ const process = async (order, index, total) => {
             { id: 'productId', title: 'Product ID' },
             { id: 'isNewProductCreated', title: 'Is New Product Created' },
             { id: 'mappingComplete', title: 'Mapping Complete' },
-            // TODO: Add answer creation status columns
+            { id: 'answerId', title: 'Answer ID' },
+            { id: 'answerCreated', title: 'Answer Created' },
             { id: 'isComplete', title: 'Is Complete' },
             { id: 'error', title: 'Error' },
         ],
