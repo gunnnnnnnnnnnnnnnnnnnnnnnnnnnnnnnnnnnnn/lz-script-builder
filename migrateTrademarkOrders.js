@@ -58,8 +58,13 @@ const findOrCreateWorkItem = async (processingOrderId, accountId) => {
         TENANT_NAME
     );
 
-    if (!existingWorkItems || existingWorkItems.content?.length === 0) {
-        // No work item exists, create a new one
+    // Filter work items to only include those matching our work template
+    const matchingWorkItems = existingWorkItems?.content?.filter(
+        workItem => workItem.name === WORK_TEMPLATE_NAME
+    ) || [];
+
+    if (matchingWorkItems.length === 0) {
+        // No matching work item exists, create a new one
         const newWorkItem = await ecpApi.createWorkItem(
             WORK_TEMPLATE_NAME,
             accountId,
@@ -74,9 +79,9 @@ const findOrCreateWorkItem = async (processingOrderId, accountId) => {
         };
     }
 
-    // Work item already exists
+    // Matching work item already exists
     return {
-        workItemId: existingWorkItems.content[0].id,
+        workItemId: matchingWorkItems[0].id,
         isNewWorkItemCreated: false,
     };
 };
