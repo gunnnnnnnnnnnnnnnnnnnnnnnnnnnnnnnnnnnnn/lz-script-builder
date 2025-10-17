@@ -17,7 +17,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
 
     // Helper function to get field value or return empty string
     const getFieldValue = (fieldName) => {
-        return fieldLookup[fieldName]?.fieldValue || '';
+        return fieldLookup[fieldName] || '';
     };
 
     return {
