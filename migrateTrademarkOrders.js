@@ -160,12 +160,12 @@ const findOrCreateTrademarkProduct = async (workItemId, accountId, customerId, p
 };
 
 /**
- * Check for existing internal note and create one if needed
+ * Check for existing internal note, update if exists, or create new one
  * @param {string} workItemId 
  * @param {object} prooferData 
- * @returns {Promise<{ internalNoteCreated: boolean, internalNoteId?: string }>}
+ * @returns {Promise<{ internalNoteCreated: boolean, internalNoteUpdated: boolean, internalNoteUpdateFailed: boolean, internalNoteId?: string }>}
  */
-const createInternalNoteIfNeeded = async (workItemId, prooferData) => {
+const createOrUpdateInternalNote = async (workItemId, prooferData) => {
     // Get existing internal notes for the work item
     const existingNotes = await ecpApi.getInternalNotesByWorkItemId(workItemId, TENANT_NAME);
 
@@ -175,20 +175,42 @@ const createInternalNoteIfNeeded = async (workItemId, prooferData) => {
         return firstParagraphText === MIGRATED_FROM_PROOFER_TEXT;
     });
 
+    // Build the internal note from proofer data
+    const jsonNote = buildInternalNoteFromProofer(prooferData);
+
     if (existingMigratedNote) {
-        console.log(`Internal note with "${MIGRATED_FROM_PROOFER_TEXT}" already exists for workItemId ${workItemId}, skipping...`);
-        return {
-            internalNoteCreated: false,
-            internalNoteId: existingMigratedNote.id,
-        };
+        console.log(`Internal note with "${MIGRATED_FROM_PROOFER_TEXT}" already exists for workItemId ${workItemId}, attempting to update...`);
+        
+        try {
+            // Attempt to update the existing note
+            await ecpApi.updateInternalNoteById(existingMigratedNote.id, jsonNote, TENANT_NAME);
+            
+            return {
+                internalNoteCreated: false,
+                internalNoteUpdated: true,
+                internalNoteUpdateFailed: false,
+                internalNoteId: existingMigratedNote.id,
+            };
+        } catch (error) {
+            // Update failed (likely due to permissions - different JWT user created the note)
+            console.log(`Failed to update internal note ${existingMigratedNote.id}: ${error.message}. Continuing...`);
+            
+            return {
+                internalNoteCreated: false,
+                internalNoteUpdated: false,
+                internalNoteUpdateFailed: true,
+                internalNoteId: existingMigratedNote.id,
+            };
+        }
     }
 
     // Create new internal note
-    const jsonNote = buildInternalNoteFromProofer(prooferData);
     const newNote = await ecpApi.createInternalNoteToWorkItem(workItemId, jsonNote, TENANT_NAME);
 
     return {
         internalNoteCreated: true,
+        internalNoteUpdated: false,
+        internalNoteUpdateFailed: false,
         internalNoteId: newNote?.id,
     };
 };
@@ -252,8 +274,8 @@ const process = async (order, index, total) => {
             answerCreated: true,
         };
 
-        // Step 6: Create internal note if it doesn't exist
-        const internalNoteResult = await createInternalNoteIfNeeded(
+        // Step 6: Create or update internal note
+        const internalNoteResult = await createOrUpdateInternalNote(
             payload.workItemId,
             payload.prooferData
         );
@@ -295,6 +317,8 @@ const process = async (order, index, total) => {
             { id: 'answerId', title: 'Answer ID' },
             { id: 'answerCreated', title: 'Answer Created' },
             { id: 'internalNoteCreated', title: 'Internal Note Created' },
+            { id: 'internalNoteUpdated', title: 'Internal Note Updated' },
+            { id: 'internalNoteUpdateFailed', title: 'Internal Note Update Failed' },
             { id: 'internalNoteId', title: 'Internal Note ID' },
             { id: 'isComplete', title: 'Is Complete' },
             { id: 'error', title: 'Error' },
