@@ -11,6 +11,7 @@ import { ENVIRONMENT } from './config.js';
 import { PROCESSING_ORDERS } from './input/migrate-trademark-orders-input.js';
 import { mapProoferToTrademarkExpert } from './trademark-mapper/trademarkDataMapper.js';
 import { buildInternalNoteFromProofer, MIGRATED_FROM_PROOFER_TEXT } from './trademark-mapper/internalNoteMapper.js';
+import { generateProoferPdf, getProoferPdfFilename } from './trademark-mapper/pdfGenerator.js';
 
 const limit = pLimit(5);
 
@@ -281,6 +282,24 @@ const process = async (order, index, total) => {
         );
         payload = { ...payload, ...internalNoteResult };
 
+        // Step 7: Generate and upload PDF file
+        const pdfBuffer = await generateProoferPdf(payload.prooferData, payload.processingOrderId);
+        const pdfFilename = getProoferPdfFilename(payload.processingOrderId);
+        
+        const uploadResponse = await ecpApi.uploadFileToWorkItem(
+            payload.workItemId,
+            pdfBuffer,
+            pdfFilename,
+            false, // isUploadedForCustomer
+            TENANT_NAME
+        );
+        
+        payload = {
+            ...payload,
+            pdfUploaded: true,
+            pdfStorageDocumentId: uploadResponse?.storageDocumentId,
+        };
+
         return {
             ...payload,
             isComplete: true
@@ -320,6 +339,8 @@ const process = async (order, index, total) => {
             { id: 'internalNoteUpdated', title: 'Internal Note Updated' },
             { id: 'internalNoteUpdateFailed', title: 'Internal Note Update Failed' },
             { id: 'internalNoteId', title: 'Internal Note ID' },
+            { id: 'pdfUploaded', title: 'PDF Uploaded' },
+            { id: 'pdfStorageDocumentId', title: 'PDF Storage Document ID' },
             { id: 'isComplete', title: 'Is Complete' },
             { id: 'error', title: 'Error' },
         ],

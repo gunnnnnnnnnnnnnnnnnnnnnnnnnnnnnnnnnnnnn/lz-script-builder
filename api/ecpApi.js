@@ -1,4 +1,5 @@
 import axios from 'axios';
+import FormData from 'form-data';
 import { getAuthHeaders } from './authApi.js';
 import config from '../config.js';
 
@@ -617,6 +618,72 @@ export const createInternalNoteToWorkItem = async (workItemId, jsonNote, tenantN
         return res?.data;
     } catch (e) {
         console.error(`Failed to create internal note for workItemId ${workItemId}`, e);
+        throw e;
+    }
+}
+
+/**
+ * Upload a file (e.g., PDF) to a work item as an attachment
+ * 
+ * @param {string} workItemId - The work item ID to attach the file to
+ * @param {Buffer} fileBuffer - The file content as a Buffer
+ * @param {string} filename - The filename (e.g., "515612547_Proofer data.pdf")
+ * @param {boolean} isUploadedForCustomer - Whether the file is uploaded for customer (default: false)
+ * @param {string|null} tenantName - The tenant name (default: null uses DEFAULT_TENANT)
+ * @returns {Promise<Object>} - Upload response
+ * 
+ * @example
+ * // Upload a PDF file to a work item
+ * const pdfBuffer = await generateProoferPdf(prooferData, '515612547');
+ * const filename = '515612547_Proofer data.pdf';
+ * const response = await uploadFileToWorkItem(workItemId, pdfBuffer, filename, false, 'altm');
+ * 
+ * @example Response:
+ * {
+ *   "storageDocumentId": "c503c3a6962a41a0b9d7a8a0510648bf",
+ *   "documentName": "515612547_Proofer data.pdf",
+ *   "tags": [],
+ *   "isArchived": false,
+ *   "createdAt": "2025-10-24T21:50:51.579Z",
+ *   "updatedAt": "2025-10-24T21:50:51.579Z",
+ *   "version": 1,
+ *   "size": 12345,
+ *   "isUploadedByCustomer": false,
+ *   "workItem": { "id": "work-item-id", "name": "ALTM_PRE_FILING_V3", ... },
+ *   "isCustomerVisible": false,
+ *   "isDownloaded": false,
+ *   "isOutputDocument": false,
+ *   "documentPath": "experts-world/ALTM/account/.../work-item/.../",
+ *   "documentType": "TMCustomerUploaded",
+ *   "fileType": "pdf"
+ * }
+ */
+export const uploadFileToWorkItem = async (workItemId, fileBuffer, filename, isUploadedForCustomer = false, tenantName = null) => {
+    const uri = `api/v1/documents/upload-to-work-item`;
+
+    try {
+        // Create FormData and append the file
+        const formData = new FormData();
+        formData.append('file', fileBuffer, {
+            filename: filename,
+            contentType: 'application/pdf',
+        });
+
+        const res = await client.post(uri, formData, {
+            params: {
+                workItemId,
+                isUploadedForCustomer,
+            },
+            headers: {
+                ...(await getAuthHeaders()),
+                ...formData.getHeaders(), // This includes Content-Type: multipart/form-data with boundary
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
+            },
+        });
+
+        return res?.data;
+    } catch (e) {
+        console.error(`Failed to upload file ${filename} to workItemId ${workItemId}`, e);
         throw e;
     }
 }
