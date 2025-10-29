@@ -57,19 +57,17 @@ export const mapProoferToTrademarkExpert = (prooferData) => {
 		// Create lookup maps for easy field access
 		const fields = createFieldLookup(prooferData.fieldAnswers);
 		const groups = createGroupLookup(prooferData.groupAnswers);
-
-		const trademarkExpertData = {
+    
+    const trademarkExpertData = {
 			attorney: buildAttorney(fields),
 			owners: buildOwners(fields),
 			markSelection: buildMarkSelection(fields),
 			goodsAndServices: buildGoodsAndServices(fields),
 			signatory: buildSignatory(fields, groups),
-			disclaimerSection: buildDisclaimerSection(fields),
-			meaningSignificanceSection: buildMeaningSignificanceSection(fields),
-			section2f: buildSection2f(fields),
-		};
+			additionalInformation: buildAdditionalInformation(fields),
+    };
 
-		return trademarkExpertData;
+    return trademarkExpertData;
 	} catch (error) {
 		// Rethrow with more context about the mapping failure
 		const errorMessage = `Failed to map PROOFER data to TRADEMARK_EXPERT format: ${error.message}`;
@@ -126,9 +124,13 @@ function buildOwners(fields) {
 		individualOwner.lastName = fields['Last_Name_of_Petitioner'];
 	} else {
 		// Juristic owner (corporation, etc.)
-		owner.corporationName = fields['Name_of_Applicant'];
-		const stateValue = fields['State'];
-		owner.incorporationState = safeLookup(stateNameToId, stateValue);
+		// Use different field for Sole Proprietorship
+		if (applicantType === 'Sole Proprietorship') {
+			owner.corporationName = fields['name_of_applicant_soleprop'];
+		} else {
+			owner.corporationName = fields['Name_of_Applicant'];
+		}
+		owner.incorporationState = fields['state_country_organization_'];
 	}
 
 	// Sole proprietor citizenship
@@ -137,24 +139,42 @@ function buildOwners(fields) {
 	// Build owner address
 	const ownerAddress = buildOwnerAddress(fields);
 
-	// Build domicile address
+	// Build domicile address and check if it's different from owner address
 	const domicileAddress = buildDomicileAddress(fields);
-	const hasDifferentDomicile = hasDomicileData(fields) ? 'yes' : null;
+	const hasDomicileData = checkHasDomicileData(fields);
+	const isDomicileDifferent = hasDomicileData && isAddressDifferent(ownerAddress, domicileAddress);
+	const differentDomicile = isDomicileDifferent ? true : false;
 
-	// DBA/AKA
-	const dbaType = fields['DBA_AKA_TA_FKA_Choice_MC'];
+	// DBA/AKA/TA
+	const dbaChoiceField = fields['DBA_AKA_TA_FKA_Choice_MC'];
 	const alternateName = fields['DBA_AKA_TA_FKA_Value_ST'];
+	
+	let hasDBA = false;
+	let dbaType = null;
+	
+	if (dbaChoiceField) {
+		const upperChoice = dbaChoiceField.toUpperCase();
+		if (upperChoice.includes('DBA')) {
+			hasDBA = true;
+			dbaType = 'dba';
+		} else if (upperChoice.includes('TA')) {
+			dbaType = 'ta';
+		} else if (upperChoice.includes('AKA')) {
+			dbaType = 'aka';
+		}
+	}
 
 	const ownerItem = {
 		ownerSelection,
 		...(Object.keys(individualOwner).length > 0 && { individualOwner }),
 		...(Object.keys(owner).length > 0 && { owner }),
 		...(Object.keys(soleProprietor).length > 0 && { soleProprietor }),
+		...(hasDBA && { hasDBA }),
 		...(dbaType && { dbaType }),
 		...(alternateName && { alternateName }),
 		ownerAddress,
-		...(hasDifferentDomicile && { differentDomicile: hasDifferentDomicile }),
-		...(hasDifferentDomicile && { domicileAddress }),
+		differentDomicile,
+		...(isDomicileDifferent && { domicileAddress }),
 		ownerEmailAddress: fields['e_mail_address'],
 		ownerPhoneNumber: formatPhoneNumber(fields['petitioner_s_telephone_number']),
 	};
@@ -188,14 +208,14 @@ function buildOwnerSelection(fields, applicantType, ownerType) {
  * Builds owner address section
  */
 function buildOwnerAddress(fields) {
-	const stateValue = fields['State'];
-	const ownerState = safeLookup(stateNameToId, stateValue);
+	const ownerState = fields['State'];
 	
-	// If state is valid US state, country is United States
+	// If state is provided, country is United States
 	const ownerCountry = ownerState ? 'United States' : getCountryNameById(fields['country']);
 
 	return {
 		ownerAddressLine1: fields['street_address'],
+		ownerAddressLine2: fields['apt_no'],
 		ownerCountry,
 		ownerCity: fields['City'],
 		ownerState,
@@ -208,13 +228,12 @@ function buildOwnerAddress(fields) {
  */
 function buildDomicileAddress(fields) {
 	const domicileCountry = fields['domicile_country_ST'] || fields['domicile_country_outside_US_ST'];
-	const domicileState = fields['domicile_state_ST'];
 
 	return {
 		domicileAddressLine1: fields['domicile_street_address_ST'],
 		domicileCountry: getCountryNameById(domicileCountry),
 		domicileCity: fields['domicile_city_ST'],
-		domicileState: safeLookup(stateNameToId, domicileState),
+		domicileState: fields['domicile_state_ST'],
 		domicileZipCode: fields['domicile_zip_code_ST'],
 	};
 }
@@ -222,7 +241,7 @@ function buildDomicileAddress(fields) {
 /**
  * Checks if domicile data exists
  */
-function hasDomicileData(fields) {
+function checkHasDomicileData(fields) {
 	return !!(
 		fields['domicile_street_address_ST'] ||
 		fields['domicile_country_ST'] ||
@@ -230,6 +249,20 @@ function hasDomicileData(fields) {
 		fields['domicile_city_ST'] ||
 		fields['domicile_state_ST'] ||
 		fields['domicile_zip_code_ST']
+	);
+}
+
+/**
+ * Compares two addresses to check if they are different
+ */
+function isAddressDifferent(ownerAddress, domicileAddress) {
+	// Compare relevant address fields
+	return (
+		ownerAddress.ownerAddressLine1 !== domicileAddress.domicileAddressLine1 ||
+		ownerAddress.ownerCity !== domicileAddress.domicileCity ||
+		ownerAddress.ownerState !== domicileAddress.domicileState ||
+		ownerAddress.ownerZipCode !== domicileAddress.domicileZipCode ||
+		ownerAddress.ownerCountry !== domicileAddress.domicileCountry
 	);
 }
 
@@ -531,5 +564,28 @@ function buildSection2f(fields) {
 		...(priorReg && { priorRegistrationsText: priorReg }),
 		...(evidence && { otherEvidenceDoc: evidence }),
 	};
+}
+
+/**
+ * Builds additional information section
+ */
+function buildAdditionalInformation(fields) {
+	// Check if additional trademark statement is Yes
+	const hasAdditionalStatement = fields['additional_trademark_statement_MC'] === 'Yes';
+	
+	// Build subsections
+	const disclaimerSection = buildDisclaimerSection(fields);
+	const meaningSignificanceSection = buildMeaningSignificanceSection(fields);
+	const section2f = buildSection2f(fields);
+	
+	// Build the additional information object
+	const additionalInfo = {
+		...(hasAdditionalStatement && { selectAdditionalInformation: ['disclaimer'] }),
+		...(Object.keys(disclaimerSection).length > 0 && { disclaimerSection }),
+		...(Object.keys(meaningSignificanceSection).length > 0 && { meaningSignificanceSection }),
+		...(Object.keys(section2f).length > 0 && { section2f }),
+	};
+	
+	return additionalInfo;
 }
 

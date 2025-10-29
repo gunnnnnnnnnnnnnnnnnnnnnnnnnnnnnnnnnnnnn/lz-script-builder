@@ -1,6 +1,6 @@
 {
 	"dataType": "TRADEMARK_EXPERT",
-	"version": 8,
+	"version": 1,
 	"data": {
 		"questionnaire": [
 			{
@@ -9760,6 +9760,7 @@
 										"tag": "LOGO",
 										"type": "documentSelect",
 										"label": "Select trademark drawing",
+										"tooltip": "File must be:\n\nTag: LOGO\n\nExtension(s): jpg, jpeg\nSize: 5.00 MB\n\nExtension(s): pdf\nSize: 30.00 MB",
 										"required": true,
 										"validation": {
 											"files": [
@@ -9916,8 +9917,9 @@
 										"required": true,
 										"isVisible": false,
 										"conditionalExpression": {
-											"fieldId": "hasNonLatinCharacters",
-											"operator": "isNotNull"
+											"value": "yes",
+											"fieldId": "hasNonEnglishWords",
+											"operator": "="
 										}
 									},
 									{
@@ -10093,6 +10095,29 @@
 										"label": "Select a signed name consent",
 										"required": true,
 										"isVisible": false,
+										"validation": {
+											"files": [
+												{
+													"size": 5242880,
+													"mimeType": {
+														"type": "image/jpeg",
+														"extensions": [
+															"jpg",
+															"jpeg"
+														]
+													}
+												},
+												{
+													"size": 31457280,
+													"mimeType": {
+														"type": "application/pdf",
+														"extensions": [
+															"pdf"
+														]
+													}
+												}
+											]
+										},
 										"conditionalExpression": {
 											"value": "yes",
 											"fieldId": "hasConsent",
@@ -10170,6 +10195,1349 @@
 								"id": "_goodsAndServicesSearch",
 								"type": "goodsAndServices",
 								"label": "Goods and Services Search",
+								"fields": [
+									{
+										"id": "classId",
+										"type": "text",
+										"label": "Class ID",
+										"required": true,
+										"isVisible": true
+									},
+									{
+										"id": "usptoDescriptionId",
+										"type": "number",
+										"label": "USPTO Description ID",
+										"required": true,
+										"isVisible": true
+									},
+									{
+										"id": "description",
+										"type": "textarea",
+										"label": "Description",
+										"required": true,
+										"isVisible": true
+									},
+									{
+										"id": "descriptionTemplate",
+										"type": "text",
+										"label": "Description Template",
+										"required": true,
+										"isVisible": true
+									},
+									{
+										"id": "templateFields",
+										"type": "repeatable",
+										"label": "Template Fields",
+										"fields": [
+											{
+												"id": "value",
+												"type": "textarea",
+												"label": "Template Field",
+												"required": true,
+												"isVisible": true
+											}
+										],
+										"required": true
+									},
+									{
+										"id": "filingBasis",
+										"type": "select",
+										"label": "Filing Basis",
+										"options": [
+											{
+												"id": "Section 1(a) Use in commerce",
+												"name": "Section 1(a) Use in commerce"
+											},
+											{
+												"id": "Section 1(b) Intent to use",
+												"name": "Section 1(b) Intent to use"
+											},
+											{
+												"id": "Section 44(d) or Section 44(e) Foreign filing basis",
+												"name": "Section 44(d) or Section 44(e) Foreign filing basis"
+											}
+										],
+										"required": true,
+										"isVisible": true
+									},
+									{
+										"id": "specimens",
+										"type": "repeatable",
+										"label": "Specimens",
+										"fields": [
+											{
+												"id": "url",
+												"type": "text",
+												"label": "URL",
+												"required": false,
+												"isVisible": false
+											},
+											{
+												"id": "dateAccess",
+												"type": "date",
+												"label": "Date Access",
+												"required": false,
+												"isVisible": false,
+												"validation": {
+													"date": {
+														"allowPast": true,
+														"allowFuture": false
+													}
+												}
+											},
+											{
+												"id": "description",
+												"type": "textarea",
+												"label": "Description",
+												"required": true,
+												"isVisible": false
+											},
+											{
+												"id": "documentName",
+												"type": "text",
+												"label": "Document Name",
+												"required": true,
+												"isVisible": false
+											},
+											{
+												"id": "documentPath",
+												"type": "text",
+												"label": "Document Path",
+												"required": true,
+												"isVisible": false
+											},
+											{
+												"id": "storageDocumentId",
+												"tag": "SPECIMEN",
+												"type": "documentSelect",
+												"label": "Specimen",
+												"required": true,
+												"isVisible": false,
+												"validation": {
+													"files": [
+														{
+															"size": 5242880,
+															"mimeType": {
+																"type": "image/jpeg",
+																"extensions": [
+																	"jpg",
+																	"jpeg"
+																]
+															}
+														},
+														{
+															"size": 31457280,
+															"mimeType": {
+																"type": "application/pdf",
+																"extensions": [
+																	"pdf"
+																]
+															}
+														}
+													]
+												}
+											},
+											{
+												"id": "dateFirstUseAnywhere",
+												"type": "date",
+												"label": "Date First Use Anywhere",
+												"required": true,
+												"isVisible": false,
+												"validation": {
+													"date": {
+														"allowPast": true,
+														"allowFuture": false
+													},
+													"conditionalExpression": {
+														"fieldId": "dateFirstUseInCommerce",
+														"operator": "<="
+													}
+												}
+											},
+											{
+												"id": "dateFirstUseInCommerce",
+												"type": "date",
+												"label": "Date First Use in Commerce",
+												"required": true,
+												"isVisible": false,
+												"validation": {
+													"date": {
+														"allowPast": true,
+														"allowFuture": false
+													},
+													"conditionalExpression": {
+														"fieldId": "dateFirstUseAnywhere",
+														"operator": ">="
+													}
+												}
+											}
+										],
+										"required": true,
+										"isVisible": false,
+										"conditionalExpression": {
+											"value": "Section 1(a) Use in commerce",
+											"fieldId": "filingBasis",
+											"operator": "="
+										}
+									},
+									{
+										"id": "foreignFilingBasis",
+										"type": "section",
+										"label": "Foreign Filing Basis",
+										"fields": [
+											{
+												"id": "basis",
+												"type": "select",
+												"label": "Foreign Filing Basis",
+												"options": [
+													{
+														"id": "Section 44(d) - Foreign Priority",
+														"name": "Section 44(d) - Foreign Priority"
+													},
+													{
+														"id": "Section 44(e) - Foreign Registration",
+														"name": "Section 44(e) - Foreign Registration"
+													}
+												],
+												"required": true,
+												"isVisible": true
+											},
+											{
+												"id": "country",
+												"type": "select",
+												"label": "Country",
+												"options": [
+													{
+														"id": "United States",
+														"name": "United States"
+													},
+													{
+														"id": "Afghanistan",
+														"name": "Afghanistan"
+													},
+													{
+														"id": "Aland Islands",
+														"name": "Aland Islands"
+													},
+													{
+														"id": "Albania",
+														"name": "Albania"
+													},
+													{
+														"id": "Algeria",
+														"name": "Algeria"
+													},
+													{
+														"id": "Andorra",
+														"name": "Andorra"
+													},
+													{
+														"id": "Angola",
+														"name": "Angola"
+													},
+													{
+														"id": "Anguilla",
+														"name": "Anguilla"
+													},
+													{
+														"id": "Antarctica",
+														"name": "Antarctica"
+													},
+													{
+														"id": "Antigua and Barbuda",
+														"name": "Antigua and Barbuda"
+													},
+													{
+														"id": "Argentina",
+														"name": "Argentina"
+													},
+													{
+														"id": "Armenia",
+														"name": "Armenia"
+													},
+													{
+														"id": "Aruba",
+														"name": "Aruba"
+													},
+													{
+														"id": "Australia",
+														"name": "Australia"
+													},
+													{
+														"id": "Austria",
+														"name": "Austria"
+													},
+													{
+														"id": "Azerbaijan",
+														"name": "Azerbaijan"
+													},
+													{
+														"id": "Bahamas",
+														"name": "Bahamas"
+													},
+													{
+														"id": "Bahrain",
+														"name": "Bahrain"
+													},
+													{
+														"id": "Bangladesh",
+														"name": "Bangladesh"
+													},
+													{
+														"id": "Barbados",
+														"name": "Barbados"
+													},
+													{
+														"id": "Belarus",
+														"name": "Belarus"
+													},
+													{
+														"id": "Belgium",
+														"name": "Belgium"
+													},
+													{
+														"id": "Belize",
+														"name": "Belize"
+													},
+													{
+														"id": "Benin",
+														"name": "Benin"
+													},
+													{
+														"id": "Bermuda",
+														"name": "Bermuda"
+													},
+													{
+														"id": "Bhutan",
+														"name": "Bhutan"
+													},
+													{
+														"id": "Bolivia (Plurinational State of)",
+														"name": "Bolivia (Plurinational State of)"
+													},
+													{
+														"id": "Bonaire, Saint Eustatius and Saba",
+														"name": "Bonaire, Saint Eustatius and Saba"
+													},
+													{
+														"id": "Bosnia and Herzegovina",
+														"name": "Bosnia and Herzegovina"
+													},
+													{
+														"id": "Botswana",
+														"name": "Botswana"
+													},
+													{
+														"id": "Bouvet Island",
+														"name": "Bouvet Island"
+													},
+													{
+														"id": "Brazil",
+														"name": "Brazil"
+													},
+													{
+														"id": "British Indian Ocean Territory",
+														"name": "British Indian Ocean Territory"
+													},
+													{
+														"id": "Brunei Darussalam",
+														"name": "Brunei Darussalam"
+													},
+													{
+														"id": "Bulgaria",
+														"name": "Bulgaria"
+													},
+													{
+														"id": "Burkina Faso",
+														"name": "Burkina Faso"
+													},
+													{
+														"id": "Burundi",
+														"name": "Burundi"
+													},
+													{
+														"id": "Cabo Verde",
+														"name": "Cabo Verde"
+													},
+													{
+														"id": "Cambodia",
+														"name": "Cambodia"
+													},
+													{
+														"id": "Cameroon",
+														"name": "Cameroon"
+													},
+													{
+														"id": "Canada",
+														"name": "Canada"
+													},
+													{
+														"id": "Cayman Islands",
+														"name": "Cayman Islands"
+													},
+													{
+														"id": "Central African Republic",
+														"name": "Central African Republic"
+													},
+													{
+														"id": "Chad",
+														"name": "Chad"
+													},
+													{
+														"id": "Chile",
+														"name": "Chile"
+													},
+													{
+														"id": "China",
+														"name": "China"
+													},
+													{
+														"id": "Christmas Island",
+														"name": "Christmas Island"
+													},
+													{
+														"id": "Cocos (Keeling) Islands",
+														"name": "Cocos (Keeling) Islands"
+													},
+													{
+														"id": "Colombia",
+														"name": "Colombia"
+													},
+													{
+														"id": "Comoros",
+														"name": "Comoros"
+													},
+													{
+														"id": "Congo",
+														"name": "Congo"
+													},
+													{
+														"id": "Congo, The Democratic Republic of the",
+														"name": "Congo, The Democratic Republic of the"
+													},
+													{
+														"id": "Cook Islands",
+														"name": "Cook Islands"
+													},
+													{
+														"id": "Costa Rica",
+														"name": "Costa Rica"
+													},
+													{
+														"id": "Côte d'Ivoire",
+														"name": "Côte d'Ivoire"
+													},
+													{
+														"id": "Croatia",
+														"name": "Croatia"
+													},
+													{
+														"id": "Cuba",
+														"name": "Cuba"
+													},
+													{
+														"id": "Curaçao",
+														"name": "Curaçao"
+													},
+													{
+														"id": "Cyprus",
+														"name": "Cyprus"
+													},
+													{
+														"id": "Czechia",
+														"name": "Czechia"
+													},
+													{
+														"id": "Denmark",
+														"name": "Denmark"
+													},
+													{
+														"id": "Djibouti",
+														"name": "Djibouti"
+													},
+													{
+														"id": "Dominica",
+														"name": "Dominica"
+													},
+													{
+														"id": "Dominican Republic",
+														"name": "Dominican Republic"
+													},
+													{
+														"id": "Ecuador",
+														"name": "Ecuador"
+													},
+													{
+														"id": "Egypt",
+														"name": "Egypt"
+													},
+													{
+														"id": "El Salvador",
+														"name": "El Salvador"
+													},
+													{
+														"id": "Equatorial Guinea",
+														"name": "Equatorial Guinea"
+													},
+													{
+														"id": "Eritrea",
+														"name": "Eritrea"
+													},
+													{
+														"id": "Estonia",
+														"name": "Estonia"
+													},
+													{
+														"id": "Eswatini",
+														"name": "Eswatini"
+													},
+													{
+														"id": "Ethiopia",
+														"name": "Ethiopia"
+													},
+													{
+														"id": "Falkland Islands (Malvinas)",
+														"name": "Falkland Islands (Malvinas)"
+													},
+													{
+														"id": "Faroe Islands",
+														"name": "Faroe Islands"
+													},
+													{
+														"id": "Fiji",
+														"name": "Fiji"
+													},
+													{
+														"id": "Finland",
+														"name": "Finland"
+													},
+													{
+														"id": "France",
+														"name": "France"
+													},
+													{
+														"id": "French Guiana",
+														"name": "French Guiana"
+													},
+													{
+														"id": "French Polynesia",
+														"name": "French Polynesia"
+													},
+													{
+														"id": "French Southern Territories",
+														"name": "French Southern Territories"
+													},
+													{
+														"id": "Gabon",
+														"name": "Gabon"
+													},
+													{
+														"id": "Gambia",
+														"name": "Gambia"
+													},
+													{
+														"id": "Georgia",
+														"name": "Georgia"
+													},
+													{
+														"id": "Germany",
+														"name": "Germany"
+													},
+													{
+														"id": "Ghana",
+														"name": "Ghana"
+													},
+													{
+														"id": "Gibraltar",
+														"name": "Gibraltar"
+													},
+													{
+														"id": "Greece",
+														"name": "Greece"
+													},
+													{
+														"id": "Greenland",
+														"name": "Greenland"
+													},
+													{
+														"id": "Grenada",
+														"name": "Grenada"
+													},
+													{
+														"id": "Guadeloupe",
+														"name": "Guadeloupe"
+													},
+													{
+														"id": "Guatemala",
+														"name": "Guatemala"
+													},
+													{
+														"id": "Guernsey",
+														"name": "Guernsey"
+													},
+													{
+														"id": "Guinea",
+														"name": "Guinea"
+													},
+													{
+														"id": "Guinea-Bissau",
+														"name": "Guinea-Bissau"
+													},
+													{
+														"id": "Guyana",
+														"name": "Guyana"
+													},
+													{
+														"id": "Haiti",
+														"name": "Haiti"
+													},
+													{
+														"id": "Heard Island and Mcdonald Islands",
+														"name": "Heard Island and Mcdonald Islands"
+													},
+													{
+														"id": "Holy See (He)",
+														"name": "Holy See (He)"
+													},
+													{
+														"id": "Honduras",
+														"name": "Honduras"
+													},
+													{
+														"id": "Hong Kong",
+														"name": "Hong Kong"
+													},
+													{
+														"id": "Hungary",
+														"name": "Hungary"
+													},
+													{
+														"id": "Iceland",
+														"name": "Iceland"
+													},
+													{
+														"id": "India",
+														"name": "India"
+													},
+													{
+														"id": "Indonesia",
+														"name": "Indonesia"
+													},
+													{
+														"id": "Iran, Islamic Republic of",
+														"name": "Iran, Islamic Republic of"
+													},
+													{
+														"id": "Iraq",
+														"name": "Iraq"
+													},
+													{
+														"id": "Ireland",
+														"name": "Ireland"
+													},
+													{
+														"id": "Isle of Man",
+														"name": "Isle of Man"
+													},
+													{
+														"id": "Israel",
+														"name": "Israel"
+													},
+													{
+														"id": "Italy",
+														"name": "Italy"
+													},
+													{
+														"id": "Jamaica",
+														"name": "Jamaica"
+													},
+													{
+														"id": "Japan",
+														"name": "Japan"
+													},
+													{
+														"id": "Jersey",
+														"name": "Jersey"
+													},
+													{
+														"id": "Jordan",
+														"name": "Jordan"
+													},
+													{
+														"id": "Kazakhstan",
+														"name": "Kazakhstan"
+													},
+													{
+														"id": "Kenya",
+														"name": "Kenya"
+													},
+													{
+														"id": "Kiribati",
+														"name": "Kiribati"
+													},
+													{
+														"id": "Korea, Democratic People's Republic of",
+														"name": "Korea, Democratic People's Republic of"
+													},
+													{
+														"id": "Korea, Republic of",
+														"name": "Korea, Republic of"
+													},
+													{
+														"id": "Kosovo",
+														"name": "Kosovo"
+													},
+													{
+														"id": "Kuwait",
+														"name": "Kuwait"
+													},
+													{
+														"id": "Kyrgyzstan",
+														"name": "Kyrgyzstan"
+													},
+													{
+														"id": "Laos People's Democratic Republic",
+														"name": "Laos People's Democratic Republic"
+													},
+													{
+														"id": "Latvia",
+														"name": "Latvia"
+													},
+													{
+														"id": "Lebanon",
+														"name": "Lebanon"
+													},
+													{
+														"id": "Lesotho",
+														"name": "Lesotho"
+													},
+													{
+														"id": "Liberia",
+														"name": "Liberia"
+													},
+													{
+														"id": "Libya",
+														"name": "Libya"
+													},
+													{
+														"id": "Liechtenstein",
+														"name": "Liechtenstein"
+													},
+													{
+														"id": "Lithuania",
+														"name": "Lithuania"
+													},
+													{
+														"id": "Luxembourg",
+														"name": "Luxembourg"
+													},
+													{
+														"id": "Macao",
+														"name": "Macao"
+													},
+													{
+														"id": "Madagascar",
+														"name": "Madagascar"
+													},
+													{
+														"id": "Malawi",
+														"name": "Malawi"
+													},
+													{
+														"id": "Malaysia",
+														"name": "Malaysia"
+													},
+													{
+														"id": "Maldives",
+														"name": "Maldives"
+													},
+													{
+														"id": "Mali",
+														"name": "Mali"
+													},
+													{
+														"id": "Malta",
+														"name": "Malta"
+													},
+													{
+														"id": "Marshall Islands",
+														"name": "Marshall Islands"
+													},
+													{
+														"id": "Martinique",
+														"name": "Martinique"
+													},
+													{
+														"id": "Mauritania",
+														"name": "Mauritania"
+													},
+													{
+														"id": "Mauritius",
+														"name": "Mauritius"
+													},
+													{
+														"id": "Mayotte",
+														"name": "Mayotte"
+													},
+													{
+														"id": "Mexico",
+														"name": "Mexico"
+													},
+													{
+														"id": "Micronesia, Federated States of",
+														"name": "Micronesia, Federated States of"
+													},
+													{
+														"id": "Monaco",
+														"name": "Monaco"
+													},
+													{
+														"id": "Mongolia",
+														"name": "Mongolia"
+													},
+													{
+														"id": "Montenegro",
+														"name": "Montenegro"
+													},
+													{
+														"id": "Montserrat",
+														"name": "Montserrat"
+													},
+													{
+														"id": "Morocco",
+														"name": "Morocco"
+													},
+													{
+														"id": "Mozambique",
+														"name": "Mozambique"
+													},
+													{
+														"id": "Myanmar",
+														"name": "Myanmar"
+													},
+													{
+														"id": "Namibia",
+														"name": "Namibia"
+													},
+													{
+														"id": "Nauru",
+														"name": "Nauru"
+													},
+													{
+														"id": "Nepal",
+														"name": "Nepal"
+													},
+													{
+														"id": "Netherlands",
+														"name": "Netherlands"
+													},
+													{
+														"id": "New Caledonia",
+														"name": "New Caledonia"
+													},
+													{
+														"id": "New Zealand",
+														"name": "New Zealand"
+													},
+													{
+														"id": "Nicaragua",
+														"name": "Nicaragua"
+													},
+													{
+														"id": "Niger",
+														"name": "Niger"
+													},
+													{
+														"id": "Nigeria",
+														"name": "Nigeria"
+													},
+													{
+														"id": "Niue",
+														"name": "Niue"
+													},
+													{
+														"id": "Norfolk Island",
+														"name": "Norfolk Island"
+													},
+													{
+														"id": "North Macedonia",
+														"name": "North Macedonia"
+													},
+													{
+														"id": "Norway",
+														"name": "Norway"
+													},
+													{
+														"id": "Oman",
+														"name": "Oman"
+													},
+													{
+														"id": "Pakistan",
+														"name": "Pakistan"
+													},
+													{
+														"id": "Palau",
+														"name": "Palau"
+													},
+													{
+														"id": "Palestine, State of",
+														"name": "Palestine, State of"
+													},
+													{
+														"id": "Panama",
+														"name": "Panama"
+													},
+													{
+														"id": "Papua New Guinea",
+														"name": "Papua New Guinea"
+													},
+													{
+														"id": "Paracel Islands",
+														"name": "Paracel Islands"
+													},
+													{
+														"id": "Paraguay",
+														"name": "Paraguay"
+													},
+													{
+														"id": "Peru",
+														"name": "Peru"
+													},
+													{
+														"id": "Philippines",
+														"name": "Philippines"
+													},
+													{
+														"id": "Pitcairn",
+														"name": "Pitcairn"
+													},
+													{
+														"id": "Poland",
+														"name": "Poland"
+													},
+													{
+														"id": "Portugal",
+														"name": "Portugal"
+													},
+													{
+														"id": "Qatar",
+														"name": "Qatar"
+													},
+													{
+														"id": "Republic of Moldova",
+														"name": "Republic of Moldova"
+													},
+													{
+														"id": "Reunion",
+														"name": "Reunion"
+													},
+													{
+														"id": "Romania",
+														"name": "Romania"
+													},
+													{
+														"id": "Russian Federation",
+														"name": "Russian Federation"
+													},
+													{
+														"id": "Rwanda",
+														"name": "Rwanda"
+													},
+													{
+														"id": "Saint Helena, Ascension and Tristan da Cunha",
+														"name": "Saint Helena, Ascension and Tristan da Cunha"
+													},
+													{
+														"id": "Saint Kitts and Nevis",
+														"name": "Saint Kitts and Nevis"
+													},
+													{
+														"id": "Saint Lucia",
+														"name": "Saint Lucia"
+													},
+													{
+														"id": "Saint Pierre and Miquelon",
+														"name": "Saint Pierre and Miquelon"
+													},
+													{
+														"id": "Saint Vincent and the Grenadines",
+														"name": "Saint Vincent and the Grenadines"
+													},
+													{
+														"id": "Samoa",
+														"name": "Samoa"
+													},
+													{
+														"id": "San Marino",
+														"name": "San Marino"
+													},
+													{
+														"id": "Sao Tome and Principe",
+														"name": "Sao Tome and Principe"
+													},
+													{
+														"id": "Saudi Arabia",
+														"name": "Saudi Arabia"
+													},
+													{
+														"id": "Senegal",
+														"name": "Senegal"
+													},
+													{
+														"id": "Serbia",
+														"name": "Serbia"
+													},
+													{
+														"id": "Seychelles",
+														"name": "Seychelles"
+													},
+													{
+														"id": "Sierra Leone",
+														"name": "Sierra Leone"
+													},
+													{
+														"id": "Singapore",
+														"name": "Singapore"
+													},
+													{
+														"id": "Sint Maarten (Dutch part)",
+														"name": "Sint Maarten (Dutch part)"
+													},
+													{
+														"id": "Slovakia",
+														"name": "Slovakia"
+													},
+													{
+														"id": "Slovenia",
+														"name": "Slovenia"
+													},
+													{
+														"id": "Solomon Islands",
+														"name": "Solomon Islands"
+													},
+													{
+														"id": "Somalia",
+														"name": "Somalia"
+													},
+													{
+														"id": "South Africa",
+														"name": "South Africa"
+													},
+													{
+														"id": "South Georgia and the South Sandwich Islands",
+														"name": "South Georgia and the South Sandwich Islands"
+													},
+													{
+														"id": "South Sudan",
+														"name": "South Sudan"
+													},
+													{
+														"id": "Spain",
+														"name": "Spain"
+													},
+													{
+														"id": "Sri Lanka",
+														"name": "Sri Lanka"
+													},
+													{
+														"id": "Sudan",
+														"name": "Sudan"
+													},
+													{
+														"id": "Suriname",
+														"name": "Suriname"
+													},
+													{
+														"id": "Svalbard and Jan Mayen",
+														"name": "Svalbard and Jan Mayen"
+													},
+													{
+														"id": "Sweden",
+														"name": "Sweden"
+													},
+													{
+														"id": "Switzerland",
+														"name": "Switzerland"
+													},
+													{
+														"id": "Syrian Arab Republic",
+														"name": "Syrian Arab Republic"
+													},
+													{
+														"id": "Taiwan",
+														"name": "Taiwan"
+													},
+													{
+														"id": "Tajikistan",
+														"name": "Tajikistan"
+													},
+													{
+														"id": "Tanzania, United Republic of",
+														"name": "Tanzania, United Republic of"
+													},
+													{
+														"id": "Thailand",
+														"name": "Thailand"
+													},
+													{
+														"id": "Timor-Leste",
+														"name": "Timor-Leste"
+													},
+													{
+														"id": "Togo",
+														"name": "Togo"
+													},
+													{
+														"id": "Tokelau",
+														"name": "Tokelau"
+													},
+													{
+														"id": "Tonga",
+														"name": "Tonga"
+													},
+													{
+														"id": "Trinidad and Tobago",
+														"name": "Trinidad and Tobago"
+													},
+													{
+														"id": "Tunisia",
+														"name": "Tunisia"
+													},
+													{
+														"id": "Turkiye",
+														"name": "Turkiye"
+													},
+													{
+														"id": "Turkmenistan",
+														"name": "Turkmenistan"
+													},
+													{
+														"id": "Turks and Caicos Islands",
+														"name": "Turks and Caicos Islands"
+													},
+													{
+														"id": "Tuvalu",
+														"name": "Tuvalu"
+													},
+													{
+														"id": "Uganda",
+														"name": "Uganda"
+													},
+													{
+														"id": "Ukraine",
+														"name": "Ukraine"
+													},
+													{
+														"id": "United Arab Emirates",
+														"name": "United Arab Emirates"
+													},
+													{
+														"id": "United Kingdom",
+														"name": "United Kingdom"
+													},
+													{
+														"id": "Uruguay",
+														"name": "Uruguay"
+													},
+													{
+														"id": "Uzbekistan",
+														"name": "Uzbekistan"
+													},
+													{
+														"id": "Vanuatu",
+														"name": "Vanuatu"
+													},
+													{
+														"id": "Venezuela, Bolivarian Republic of",
+														"name": "Venezuela, Bolivarian Republic of"
+													},
+													{
+														"id": "Viet Nam",
+														"name": "Viet Nam"
+													},
+													{
+														"id": "Virgin Islands, British",
+														"name": "Virgin Islands, British"
+													},
+													{
+														"id": "Wallis and Futuna",
+														"name": "Wallis and Futuna"
+													},
+													{
+														"id": "Western Sahara",
+														"name": "Western Sahara"
+													},
+													{
+														"id": "Yemen",
+														"name": "Yemen"
+													},
+													{
+														"id": "Zambia",
+														"name": "Zambia"
+													},
+													{
+														"id": "Zimbabwe",
+														"name": "Zimbabwe"
+													}
+												],
+												"required": true,
+												"isVisible": true
+											},
+											{
+												"id": "foreignApplicationNumber",
+												"type": "number",
+												"label": "Foreign Application Number",
+												"required": true,
+												"isVisible": false,
+												"conditionalExpression": {
+													"value": "Section 44(d) - Foreign Priority",
+													"fieldId": "basis",
+													"operator": "="
+												}
+											},
+											{
+												"id": "foreignApplicationFilingDate",
+												"type": "date",
+												"label": "Foreign Application Filing Date",
+												"required": true,
+												"isVisible": false,
+												"validation": {
+													"date": {
+														"allowPast": true,
+														"allowFuture": false
+													},
+													"conditionalExpression": {
+														"value": {
+															"unit": "months",
+															"value": 6,
+															"operator": "minus"
+														},
+														"fieldId": "foreignApplicationFilingDate",
+														"operator": ">="
+													}
+												},
+												"conditionalExpression": {
+													"value": "Section 44(d) - Foreign Priority",
+													"fieldId": "basis",
+													"operator": "="
+												}
+											},
+											{
+												"id": "applicantIntentionToRegister",
+												"type": "select",
+												"label": "Applicant Intention to Register",
+												"options": [
+													{
+														"id": "Applicant intends to rely on section 44(e) as the basis for registration.  If the application ultimately proceeds to registration under another basis, the applicant wants to retain the foreign application filing date for priority.",
+														"name": "Applicant intends to rely on section 44(e) as the basis for registration.  If the application ultimately proceeds to registration under another basis, the applicant wants to retain the foreign application filing date for priority."
+													},
+													{
+														"id": "Applicant has another filing basis for registration and doesn't intend to rely solely on section 44(e), but wants to retain the foreign application filing date for priority.",
+														"name": "Applicant has another filing basis for registration and doesn't intend to rely solely on section 44(e), but wants to retain the foreign application filing date for priority."
+													}
+												],
+												"required": true,
+												"isVisible": false,
+												"conditionalExpression": {
+													"value": "Section 44(d) - Foreign Priority",
+													"fieldId": "basis",
+													"operator": "="
+												}
+											},
+											{
+												"id": "foreignRegistrationNumber",
+												"type": "number",
+												"label": "Foreign Registration Number",
+												"required": true,
+												"isVisible": false,
+												"conditionalExpression": {
+													"value": "Section 44(e) - Foreign Registration",
+													"fieldId": "basis",
+													"operator": "="
+												}
+											},
+											{
+												"id": "foreignRegistrationDate",
+												"type": "date",
+												"label": "Foreign Registration Date",
+												"required": true,
+												"isVisible": false,
+												"conditionalExpression": {
+													"value": "Section 44(e) - Foreign Registration",
+													"fieldId": "basis",
+													"operator": "="
+												}
+											},
+											{
+												"id": "foreignRegistrationRenewalDate",
+												"type": "date",
+												"label": "Foreign Registration Renewal Date",
+												"required": false,
+												"isVisible": false,
+												"conditionalExpression": {
+													"value": "Section 44(e) - Foreign Registration",
+													"fieldId": "basis",
+													"operator": "="
+												}
+											},
+											{
+												"id": "foreignRegistrationExpirationDate",
+												"type": "date",
+												"label": "Foreign Registration Expiration Date",
+												"required": true,
+												"isVisible": false,
+												"conditionalExpression": {
+													"value": "Section 44(e) - Foreign Registration",
+													"fieldId": "basis",
+													"operator": "="
+												}
+											},
+											{
+												"id": "registrationDocuments",
+												"tag": "FOREIGN_REGISTRATION",
+												"type": "documentSelect",
+												"label": "Registration Documents",
+												"required": true,
+												"isVisible": false,
+												"validation": {
+													"files": [
+														{
+															"size": 5242880,
+															"mimeType": {
+																"type": "image/jpeg",
+																"extensions": [
+																	"jpg",
+																	"jpeg"
+																]
+															}
+														},
+														{
+															"size": 31457280,
+															"mimeType": {
+																"type": "application/pdf",
+																"extensions": [
+																	"pdf"
+																]
+															}
+														}
+													]
+												},
+												"conditionalExpression": {
+													"value": "Section 44(e) - Foreign Registration",
+													"fieldId": "basis",
+													"operator": "="
+												}
+											}
+										],
+										"required": true,
+										"isVisible": false,
+										"conditionalExpression": {
+											"value": "Section 44(d) or Section 44(e) Foreign filing basis",
+											"fieldId": "filingBasis",
+											"operator": "="
+										}
+									}
+								],
 								"isVisible": true
 							}
 						]
@@ -10180,408 +11548,531 @@
 				"name": "Additional Information",
 				"fields": [
 					{
-						"id": "selectAdditionalInformation",
-						"type": "checkboxGroup",
-						"label": "Select additional information",
-						"options": [
-							{
-								"id": "disclaimer",
-								"name": "There are words or phrases in my trademark that I want to disclaim"
-							},
-							{
-								"id": "meaning",
-								"name": "There are words or phrases in my trademark that have an industry-specific meaning, geographic significance or other significance"
-							},
-							{
-								"id": "priorRegistrations",
-								"name": "I am claiming ownership of active prior registration(s)"
-							},
-							{
-								"id": "section2f",
-								"name": "I am claiming acquired distinctiveness in part or in whole (Section 2(f) claim)"
-							},
-							{
-								"id": "moreInformation",
-								"name": "I need to provide additional information about my trademark, such as use of the mark in another form, or some other miscellaneous statement"
-							},
-							{
-								"id": "concurrentUse",
-								"name": "Concurrent use",
-								"conditionalExpression": {
-									"value": "Section 1(a) Use in commerce",
-									"fieldId": "goodsAndServices._goodsAndServicesSearch[?].filingBasis",
-									"operator": "="
-								}
-							}
-						],
-						"required": false,
-						"defaultValue": []
-					},
-					{
-						"id": "disclaimerSection",
+						"id": "additionalInformation",
 						"type": "section",
-						"label": "Disclaimer",
+						"label": "Additional Information",
 						"fields": [
 							{
-								"id": "disclaimerText",
-								"type": "text",
-								"label": "Disclaimer (use \" \", all caps for the disclaimed words, and the word AND between phrases)",
-								"required": true,
-								"placeholder": "Enter wording to disclaim"
-							}
-						],
-						"isVisible": false,
-						"conditionalExpression": {
-							"value": "disclaimer",
-							"fieldId": "selectAdditionalInformation",
-							"operator": "containsAny"
-						}
-					},
-					{
-						"id": "meaningSignificanceSection",
-						"type": "section",
-						"label": "Meaning or Significance",
-						"fields": [
-							{
-								"id": "meanings",
-								"type": "repeatable",
-								"label": "Meaning or Significance",
-								"fields": [
+								"id": "selectAdditionalInformation",
+								"type": "checkboxGroup",
+								"label": "Select additional information",
+								"options": [
 									{
-										"id": "wordOrPhrase",
-										"type": "text",
-										"label": "Which word or phrase in the trademark has specific meaning?",
-										"required": true
+										"id": "disclaimer",
+										"name": "There are words or phrases in my trademark that I want to disclaim"
 									},
 									{
 										"id": "meaning",
-										"type": "text",
-										"label": "What does the word or phrase mean?",
-										"required": true
-									}
-								],
-								"repeats": 4
-							}
-						],
-						"isVisible": false,
-						"conditionalExpression": {
-							"value": "meaning",
-							"fieldId": "selectAdditionalInformation",
-							"operator": "containsAny"
-						}
-					},
-					{
-						"id": "priorRegistrationsSection",
-						"type": "section",
-						"label": "Ownership of Active Prior Registrations",
-						"fields": [
-							{
-								"id": "registrations",
-								"type": "repeatable",
-								"label": "Prior Registration Numbers",
-								"fields": [
-									{
-										"id": "registrationNumber",
-										"type": "number",
-										"label": "Enter a prior registration number (5-7 digits)",
-										"required": true,
-										"validation": {
-											"max": 7,
-											"min": 5,
-											"message": "Registration number must be 5 to 7 digits",
-											"pattern": "^\\d{5,7}$"
-										}
-									}
-								],
-								"repeats": 25
-							}
-						],
-						"isVisible": false,
-						"conditionalExpression": {
-							"value": "priorRegistrations",
-							"fieldId": "selectAdditionalInformation",
-							"operator": "containsAny"
-						}
-					},
-					{
-						"id": "section2f",
-						"type": "section",
-						"label": "Section 2(f) Claim (Acquired Distinctiveness)",
-						"fields": [
-							{
-								"id": "claimScope",
-								"type": "radio",
-								"label": "How does your claim of acquired distinctiveness apply to the mark? (Select one)",
-								"options": [
-									{
-										"id": "entire_mark",
-										"name": "The entire mark (in whole)"
+										"name": "There are words or phrases in my trademark that have an industry-specific meaning, geographic significance or other significance"
 									},
 									{
-										"id": "portion",
-										"name": "A portion of the mark (in part)"
-									}
-								],
-								"required": true
-							},
-							{
-								"id": "claimedPortion",
-								"type": "textarea",
-								"label": "What relevant portion of the mark is being claimed?",
-								"required": true,
-								"isVisible": false,
-								"conditionalExpression": {
-									"value": "portion",
-									"fieldId": "section2f.claimScope",
-									"operator": "="
-								}
-							},
-							{
-								"id": "conditionPriorRegistration",
-								"type": "checkboxGroup",
-								"label": "Which of the following conditions apply to the trademark?",
-								"options": [
-									{
-										"id": "priorRegistration",
-										"name": "Ownership of prior registration(s)"
+										"id": "priorRegistrations",
+										"name": "I am claiming ownership of active prior registration(s)"
 									},
 									{
-										"id": "fiveYearsUse",
-										"name": "Five or more years' use of the mark in commerce"
+										"id": "section2f",
+										"name": "I am claiming acquired distinctiveness in part or in whole (Section 2(f) claim)"
 									},
 									{
-										"id": "otherEvidence",
-										"name": "Other evidence (uncommon)"
+										"id": "moreInformation",
+										"name": "I need to provide additional information about my trademark, such as use of the mark in another form, or some other miscellaneous statement"
+									},
+									{
+										"id": "concurrentUse",
+										"name": "Concurrent use (Only applicable if UIC)"
 									}
 								],
 								"required": false,
-								"isVisible": false,
-								"defaultValue": [],
-								"conditionalExpression": {
-									"fieldId": "section2f.claimScope",
-									"operator": "isNotNull"
-								}
+								"defaultValue": []
 							},
 							{
-								"id": "priorRegistrationsText",
-								"type": "textarea",
-								"label": "Enter all prior registration numbers separated by a comma",
-								"required": true,
-								"isVisible": false,
-								"conditionalExpression": {
-									"value": "priorRegistration",
-									"fieldId": "section2f.conditionPriorRegistration",
-									"operator": "containsAny"
-								}
-							},
-							{
-								"id": "otherEvidenceDoc",
-								"tag": "2F_CLAIM",
-								"type": "documentSelect",
-								"label": "Select supporting document",
-								"required": true,
-								"isVisible": false,
-								"conditionalExpression": {
-									"value": "otherEvidence",
-									"fieldId": "section2f.conditionPriorRegistration",
-									"operator": "containsAny"
-								}
-							},
-							{
-								"id": "claimRestrictions",
+								"id": "disclaimerSection",
 								"type": "section",
-								"label": "2(f) Claim Restrictions",
+								"label": "Disclaimer",
 								"fields": [
 									{
-										"id": "isRestricted",
-										"type": "radio",
-										"label": "Does this claim only apply to some of the goods, services, or classes identified in this application?",
-										"options": [
+										"id": "disclaimerText",
+										"type": "text",
+										"label": "Disclaimer (use \" \", all caps for the disclaimed words, and the word AND between phrases)",
+										"required": true,
+										"placeholder": "Enter wording to disclaim"
+									}
+								],
+								"isVisible": false,
+								"conditionalExpression": {
+									"value": "disclaimer",
+									"fieldId": "selectAdditionalInformation",
+									"operator": "containsAny"
+								}
+							},
+							{
+								"id": "meaningSignificanceSection",
+								"type": "section",
+								"label": "Meaning or Significance",
+								"fields": [
+									{
+										"id": "meanings",
+										"type": "repeatable",
+										"label": "Meaning or Significance",
+										"fields": [
 											{
-												"id": "yes",
-												"name": "Yes"
+												"id": "wordOrPhrase",
+												"type": "text",
+												"label": "Which word or phrase in the trademark has specific meaning?",
+												"required": true
 											},
 											{
-												"id": "no",
-												"name": "No"
+												"id": "meaning",
+												"type": "text",
+												"label": "What does the word or phrase mean?",
+												"required": true
+											}
+										],
+										"repeats": 4
+									}
+								],
+								"isVisible": false,
+								"conditionalExpression": {
+									"value": "meaning",
+									"fieldId": "selectAdditionalInformation",
+									"operator": "containsAny"
+								}
+							},
+							{
+								"id": "priorRegistrationsSection",
+								"type": "section",
+								"label": "Ownership of Active Prior Registrations",
+								"fields": [
+									{
+										"id": "registrations",
+										"type": "repeatable",
+										"label": "Prior Registration Numbers",
+										"fields": [
+											{
+												"id": "registrationNumber",
+												"type": "number",
+												"label": "Enter a prior registration number (5-7 digits)",
+												"required": true,
+												"validation": {
+													"max": 7,
+													"min": 5,
+													"message": "Registration number must be 5 to 7 digits",
+													"pattern": "^\\d{5,7}$"
+												}
+											}
+										],
+										"repeats": 25
+									}
+								],
+								"isVisible": false,
+								"conditionalExpression": {
+									"value": "priorRegistrations",
+									"fieldId": "selectAdditionalInformation",
+									"operator": "containsAny"
+								}
+							},
+							{
+								"id": "section2f",
+								"type": "section",
+								"label": "Section 2(f) Claim (Acquired Distinctiveness)",
+								"fields": [
+									{
+										"id": "claimScope",
+										"type": "radio",
+										"label": "How does your claim of acquired distinctiveness apply to the mark? (Select one)",
+										"options": [
+											{
+												"id": "entire_mark",
+												"name": "The entire mark (in whole)"
+											},
+											{
+												"id": "portion",
+												"name": "A portion of the mark (in part)"
 											}
 										],
 										"required": true
 									},
 									{
-										"id": "restrictionStatement",
+										"id": "claimedPortion",
 										"type": "textarea",
-										"label": "Enter your 2(f) claim of acquired distinctiveness",
+										"label": "What relevant portion of the mark is being claimed?",
 										"required": true,
 										"isVisible": false,
-										"placeholder": "The 2(f) claim is restricted to class 36.\nThe 2(f) claim is restricted to classes 35, 36, and 41.\nThe 2(f) claim is restricted to the goods \"slippers\" and \"socks\" in class 25.\nThe 2(f) claim is restricted to class 28 and the goods \"tee-shirts\" and \"shoes\" in class 25.",
 										"conditionalExpression": {
-											"value": "yes",
-											"fieldId": "section2f.claimRestrictions.isRestricted",
+											"value": "portion",
+											"fieldId": "section2f.claimScope",
 											"operator": "="
 										}
+									},
+									{
+										"id": "conditionPriorRegistration",
+										"tag": "2F_CLAIM",
+										"type": "checkboxGroup",
+										"label": "Which of the following conditions apply to the trademark?",
+										"options": [
+											{
+												"id": "priorRegistration",
+												"name": "Ownership of prior registration(s)"
+											},
+											{
+												"id": "fiveYearsUse",
+												"name": "Five or more years' use of the mark in commerce"
+											},
+											{
+												"id": "otherEvidence",
+												"name": "Other evidence (uncommon)"
+											}
+										],
+										"tooltip": "File must be:\n\nTag: 2F_CLAIM\n\nExtension(s): jpg, jpeg\nSize: 5.00 MB\n\nExtension(s): pdf\nSize: 30.00 MB",
+										"required": false,
+										"isVisible": false,
+										"validation": {
+											"files": [
+												{
+													"size": 5242880,
+													"mimeType": {
+														"type": "image/jpeg",
+														"extensions": [
+															"jpg",
+															"jpeg"
+														]
+													}
+												},
+												{
+													"size": 31457280,
+													"mimeType": {
+														"type": "application/pdf",
+														"extensions": [
+															"pdf"
+														]
+													}
+												}
+											]
+										},
+										"defaultValue": [],
+										"conditionalExpression": {
+											"fieldId": "section2f.claimScope",
+											"operator": "isNotNull"
+										}
+									},
+									{
+										"id": "priorRegistrationsText",
+										"type": "textarea",
+										"label": "Enter all prior registration numbers separated by a comma",
+										"required": true,
+										"isVisible": false,
+										"conditionalExpression": {
+											"value": "priorRegistration",
+											"fieldId": "section2f.conditionPriorRegistration",
+											"operator": "containsAny"
+										}
+									},
+									{
+										"id": "otherEvidenceDoc",
+										"tag": "2F_CLAIM",
+										"type": "documentSelect",
+										"label": "Select supporting document",
+										"tooltip": "File must be:\n\nTag: 2F_CLAIM\n\nExtension(s): jpg, jpeg\nSize: 5.00 MB\n\nExtension(s): pdf\nSize: 30.00 MB",
+										"required": true,
+										"isVisible": false,
+										"validation": {
+											"files": [
+												{
+													"size": 5242880,
+													"mimeType": {
+														"type": "image/jpeg",
+														"extensions": [
+															"jpg",
+															"jpeg"
+														]
+													}
+												},
+												{
+													"size": 31457280,
+													"mimeType": {
+														"type": "application/pdf",
+														"extensions": [
+															"pdf"
+														]
+													}
+												}
+											]
+										},
+										"conditionalExpression": {
+											"value": "otherEvidence",
+											"fieldId": "section2f.conditionPriorRegistration",
+											"operator": "containsAny"
+										}
+									},
+									{
+										"id": "claimRestrictions",
+										"type": "section",
+										"label": "2(f) Claim Restrictions",
+										"fields": [
+											{
+												"id": "isRestricted",
+												"type": "radio",
+												"label": "Does this claim only apply to some of the goods, services, or classes identified in this application?",
+												"options": [
+													{
+														"id": "yes",
+														"name": "Yes"
+													},
+													{
+														"id": "no",
+														"name": "No"
+													}
+												],
+												"required": true
+											},
+											{
+												"id": "restrictionStatement",
+												"type": "textarea",
+												"label": "Enter your 2(f) claim of acquired distinctiveness",
+												"required": true,
+												"isVisible": false,
+												"placeholder": "The 2(f) claim is restricted to class 36.\nThe 2(f) claim is restricted to classes 35, 36, and 41.\nThe 2(f) claim is restricted to the goods \"slippers\" and \"socks\" in class 25.\nThe 2(f) claim is restricted to class 28 and the goods \"tee-shirts\" and \"shoes\" in class 25.",
+												"conditionalExpression": {
+													"value": "yes",
+													"fieldId": "section2f.claimRestrictions.isRestricted",
+													"operator": "="
+												}
+											}
+										]
 									}
-								]
-							}
-						],
-						"isVisible": false,
-						"conditionalExpression": {
-							"value": "section2f",
-							"fieldId": "selectAdditionalInformation",
-							"operator": "containsAny"
-						}
-					},
-					{
-						"id": "moreInformationSection",
-						"type": "section",
-						"label": "More Information",
-						"fields": [
-							{
-								"id": "moreInformationText",
-								"type": "textarea",
-								"label": "Use the box below to provide additional information about the trademark or application (miscellaneous statement)",
-								"required": true,
-								"placeholder": "Enter additional information"
-							},
-							{
-								"id": "moreInformationDocuments",
-								"tag": "MISC_STATEMENT",
-								"type": "documentSelect",
-								"label": "Select supporting documents",
-								"required": false,
-								"isVisible": true,
-								"allowMultiple": true
-							}
-						],
-						"isVisible": false,
-						"conditionalExpression": {
-							"value": "moreInformation",
-							"fieldId": "selectAdditionalInformation",
-							"operator": "containsAny"
-						}
-					},
-					{
-						"id": "concurrentUseSection",
-						"type": "section",
-						"label": "Concurrent Use",
-						"fields": [
-							{
-								"id": "hasConsent",
-								"type": "checkbox",
-								"label": "I have consent",
-								"isVisible": true
-							},
-							{
-								"id": "consentSupportingInformation",
-								"type": "textarea",
-								"label": "Supporting information",
-								"required": true,
-								"isVisible": true,
-								"conditionalExpression": {
-									"value": true,
-									"fieldId": "concurrentUseSection.hasConsent",
-									"operator": "="
-								}
-							},
-							{
-								"id": "consentSelectSupportingDocuments",
-								"tag": "CONCURRENT_USE",
-								"type": "documentSelect",
-								"label": "Select supporting documents",
-								"required": false,
+								],
 								"isVisible": false,
-								"allowMultiple": true,
 								"conditionalExpression": {
-									"value": true,
-									"fieldId": "concurrentUseSection.hasConsent",
-									"operator": "="
+									"value": "section2f",
+									"fieldId": "selectAdditionalInformation",
+									"operator": "containsAny"
 								}
 							},
 							{
-								"id": "hasDecision",
-								"type": "checkbox",
-								"label": "I already have a decision on concurrent use from the Trademark Trial and Appeal Board or a court.",
-								"isVisible": true
-							},
-							{
-								"id": "decisionSupportingInformation",
-								"type": "textarea",
-								"label": "Supporting information",
-								"required": true,
-								"isVisible": true,
-								"conditionalExpression": {
-									"value": true,
-									"fieldId": "concurrentUseSection.hasDecision",
-									"operator": "="
-								}
-							},
-							{
-								"id": "decisionSelectSupportingDocuments",
-								"tag": "CONCURRENT_USE",
-								"type": "documentSelect",
-								"label": "Select a copy of the final TTAB decision or court decree",
-								"required": true,
-								"isVisible": false,
-								"allowMultiple": true,
-								"conditionalExpression": {
-									"value": true,
-									"fieldId": "concurrentUseSection.hasDecision",
-									"operator": "="
-								}
-							},
-							{
-								"id": "dofuBeforeConcurrentUser",
-								"type": "checkbox",
-								"label": "My dates of first use are before the concurrent user's filing date(s).",
-								"isVisible": true
-							},
-							{
-								"id": "dofuBeforeConcurrentUserSupportingInformation",
-								"type": "textarea",
-								"label": "Supporting information",
-								"required": true,
-								"isVisible": true,
-								"conditionalExpression": {
-									"value": true,
-									"fieldId": "concurrentUseSection.dofuBeforeConcurrentUser",
-									"operator": "="
-								}
-							},
-							{
-								"id": "attestations",
+								"id": "moreInformationSection",
 								"type": "section",
-								"label": "Attestations",
+								"label": "More Information",
 								"fields": [
 									{
-										"id": "attestationGoodsAndServices",
+										"id": "moreInformationText",
 										"type": "textarea",
-										"label": "Enter all of the following:\nThe goods and services under your claim\nThe geographic area where you’re using your mark in commerce\nThe mode of use info of the goods and services",
+										"label": "Use the box below to provide additional information about the trademark or application (miscellaneous statement)",
 										"required": true,
-										"isVisible": true
+										"placeholder": "Enter additional information"
 									},
 									{
-										"id": "attestationConcurrentUsers",
-										"type": "textarea",
-										"label": "Enter the following for each concurrent user:\nTheir names and addresses\nTheir goods and services\nThe registrations they own or applications they’ve filed (if any)",
-										"required": true,
-										"isVisible": true
-									},
-									{
-										"id": "attestationGeographicUser",
-										"type": "textarea",
-										"label": "Enter the following for each concurrent user:\nThe geographic area where the concurrent user is using the mark in commerce\nTheir modes of use info\nThe time periods they have used the mark",
-										"required": true,
-										"isVisible": true
+										"id": "moreInformationDocuments",
+										"tag": "MISC_STATEMENT",
+										"type": "documentSelect",
+										"label": "Select supporting documents",
+										"tooltip": "File must be:\n\nTag: MISC_STATEMENT\n\nExtension(s): jpg, jpeg\nSize: 5.00 MB\n\nExtension(s): pdf\nSize: 30.00 MB",
+										"required": false,
+										"isVisible": true,
+										"validation": {
+											"files": [
+												{
+													"size": 5242880,
+													"mimeType": {
+														"type": "image/jpeg",
+														"extensions": [
+															"jpg",
+															"jpeg"
+														]
+													}
+												},
+												{
+													"size": 31457280,
+													"mimeType": {
+														"type": "application/pdf",
+														"extensions": [
+															"pdf"
+														]
+													}
+												}
+											]
+										},
+										"allowMultiple": true
 									}
-								]
+								],
+								"isVisible": false,
+								"conditionalExpression": {
+									"value": "moreInformation",
+									"fieldId": "selectAdditionalInformation",
+									"operator": "containsAny"
+								}
+							},
+							{
+								"id": "concurrentUseSection",
+								"type": "section",
+								"label": "Concurrent Use",
+								"fields": [
+									{
+										"id": "hasConsent",
+										"type": "checkbox",
+										"label": "I have consent",
+										"isVisible": true
+									},
+									{
+										"id": "consentSupportingInformation",
+										"type": "textarea",
+										"label": "Supporting information",
+										"required": true,
+										"isVisible": true,
+										"conditionalExpression": {
+											"value": true,
+											"fieldId": "concurrentUseSection.hasConsent",
+											"operator": "="
+										}
+									},
+									{
+										"id": "consentSelectSupportingDocuments",
+										"tag": "CONCURRENT_USE",
+										"type": "documentSelect",
+										"label": "Select supporting documents",
+										"tooltip": "File must be:\n\nTag: CONCURRENT_USE\n\nExtension(s): jpg, jpeg\nSize: 5.00 MB\n\nExtension(s): pdf\nSize: 30.00 MB",
+										"required": false,
+										"isVisible": false,
+										"validation": {
+											"files": [
+												{
+													"size": 5242880,
+													"mimeType": {
+														"type": "image/jpeg",
+														"extensions": [
+															"jpg",
+															"jpeg"
+														]
+													}
+												},
+												{
+													"size": 31457280,
+													"mimeType": {
+														"type": "application/pdf",
+														"extensions": [
+															"pdf"
+														]
+													}
+												}
+											]
+										},
+										"allowMultiple": true,
+										"conditionalExpression": {
+											"value": true,
+											"fieldId": "concurrentUseSection.hasConsent",
+											"operator": "="
+										}
+									},
+									{
+										"id": "hasDecision",
+										"type": "checkbox",
+										"label": "I already have a decision on concurrent use from the Trademark Trial and Appeal Board or a court.",
+										"isVisible": true
+									},
+									{
+										"id": "decisionSupportingInformation",
+										"type": "textarea",
+										"label": "Supporting information",
+										"required": true,
+										"isVisible": true,
+										"conditionalExpression": {
+											"value": true,
+											"fieldId": "concurrentUseSection.hasDecision",
+											"operator": "="
+										}
+									},
+									{
+										"id": "decisionSelectSupportingDocuments",
+										"tag": "CONCURRENT_USE",
+										"type": "documentSelect",
+										"label": "Select a copy of the final TTAB decision or court decree",
+										"tooltip": "File must be:\n\nTag: CONCURRENT_USE\n\nExtension(s): jpg, jpeg\nSize: 5.00 MB\n\nExtension(s): pdf\nSize: 30.00 MB",
+										"required": true,
+										"isVisible": false,
+										"validation": {
+											"files": [
+												{
+													"size": 5242880,
+													"mimeType": {
+														"type": "image/jpeg",
+														"extensions": [
+															"jpg",
+															"jpeg"
+														]
+													}
+												},
+												{
+													"size": 31457280,
+													"mimeType": {
+														"type": "application/pdf",
+														"extensions": [
+															"pdf"
+														]
+													}
+												}
+											]
+										},
+										"allowMultiple": true,
+										"conditionalExpression": {
+											"value": true,
+											"fieldId": "concurrentUseSection.hasDecision",
+											"operator": "="
+										}
+									},
+									{
+										"id": "dofuBeforeConcurrentUser",
+										"type": "checkbox",
+										"label": "My dates of first use are before the concurrent user's filing date(s).",
+										"isVisible": true
+									},
+									{
+										"id": "dofuBeforeConcurrentUserSupportingInformation",
+										"type": "textarea",
+										"label": "Supporting information",
+										"required": true,
+										"isVisible": true,
+										"conditionalExpression": {
+											"value": true,
+											"fieldId": "concurrentUseSection.dofuBeforeConcurrentUser",
+											"operator": "="
+										}
+									},
+									{
+										"id": "attestations",
+										"type": "section",
+										"label": "Attestations",
+										"fields": [
+											{
+												"id": "attestationGoodsAndServices",
+												"type": "textarea",
+												"label": "Enter all of the following:\nThe goods and services under your claim\nThe geographic area where you’re using your mark in commerce\nThe mode of use info of the goods and services",
+												"required": true,
+												"isVisible": true
+											},
+											{
+												"id": "attestationConcurrentUsers",
+												"type": "textarea",
+												"label": "Enter the following for each concurrent user:\nTheir names and addresses\nTheir goods and services\nThe registrations they own or applications they’ve filed (if any)",
+												"required": true,
+												"isVisible": true
+											},
+											{
+												"id": "attestationGeographicUser",
+												"type": "textarea",
+												"label": "Enter the following for each concurrent user:\nThe geographic area where the concurrent user is using the mark in commerce\nTheir modes of use info\nThe time periods they have used the mark",
+												"required": true,
+												"isVisible": true
+											}
+										]
+									}
+								],
+								"isVisible": false,
+								"conditionalExpression": {
+									"value": "concurrentUse",
+									"fieldId": "selectAdditionalInformation",
+									"operator": "containsAny"
+								}
 							}
-						],
-						"isVisible": false,
-						"conditionalExpression": {
-							"value": "concurrentUse",
-							"fieldId": "selectAdditionalInformation",
-							"operator": "containsAny"
-						}
+						]
 					}
 				]
 			},
@@ -10726,5 +12217,5 @@
 			}
 		]
 	},
-	"createdAt": "2025-10-01T17:22:16.141Z"
+	"createdAt": "2025-09-26T17:27:37.121Z"
 }

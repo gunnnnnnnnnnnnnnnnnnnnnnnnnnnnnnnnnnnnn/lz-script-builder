@@ -96,6 +96,10 @@ export const generateProoferPdf = (prooferData, processingOrderId) => {
             addField('Specimen URL:', getField('gs_uic_specimen_url_ST'));
             addField('Date of Specimen URL:', getField('gs_uic_date_of_specimen_url_ST'));
             addField('G&S Used in Commerce Filing Basis Internal Note:', getField('gs_uic_G_S_filing_basis_internal_note_LT'));
+            addField('Name of Sole Proprietor Petitioner:', getField('Name_of_Petitioner'));
+            addField('Partner\'s name, Citizenship OR where legally organized, Entity type (Use comma to separate):', getField('US_applicants_only_partnership'));
+            addField('Literal Element. Otherwise leave blank:', getField('Literal_Element_Only'));
+            addField('If Logo is in Color, please complete the color list, otherwise leave blank if is Black & White:', getField('mark_detail_color'));
 
             // Footer with processing order ID
             doc.moveDown(2);
