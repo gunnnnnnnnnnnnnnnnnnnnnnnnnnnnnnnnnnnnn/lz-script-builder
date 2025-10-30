@@ -100,6 +100,8 @@ export const generateProoferPdf = (prooferData, processingOrderId) => {
             addField('Partner\'s name, Citizenship OR where legally organized, Entity type (Use comma to separate):', getField('US_applicants_only_partnership'));
             addField('Literal Element. Otherwise leave blank:', getField('Literal_Element_Only'));
             addField('If Logo is in Color, please complete the color list, otherwise leave blank if is Black & White:', getField('mark_detail_color'));
+            addField('The following wording within the mark, has no any meaning in a foreign language:', getField('AS_non_trans_in_foreign_language_ST'));
+            addField('Non-Latin characters in mark transliterate to following words & have no meaning in foreign language:', getField('AS_non_latin_chars_in_the_mark_no_mean_ST'));
 
             // Footer with processing order ID
             doc.moveDown(2);

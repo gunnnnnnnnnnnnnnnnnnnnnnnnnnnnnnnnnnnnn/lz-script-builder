@@ -344,29 +344,66 @@ function buildPersons(fields) {
  * Builds translation and transliteration array
  */
 function buildTranslationTransliteration(fields) {
-	const hasNonEnglishWords = safeLookup(yesOrNoMap, fields['foreign_language']);
-	const foreignLanguageWords = fields['foreign_language_words'];
+	const result = [];
 
-	const nonLatinChars = fields['AS_non_latin_chars_in_the_mark_ST'];
-	const hasNonLatinCharacters = nonLatinChars ? 'yes' : null;
+	// Translation set
+	const translationSetSource = fields['AS_eng_translation_of_ST'];
+	const translationSetEnglish = fields['AS_eng_translation_is_ST'];
+	const hasTranslationSet = translationSetSource || translationSetEnglish;
 
-	const nonLatinCharacters = {
-		...(hasNonLatinCharacters && { hasNonLatinCharacters }),
-		nonLatinTransliteration: fields['AS_non_latin_chars_in_the_mark_mean_ST'],
-		nonLatinLanguage: nonLatinChars,
-	};
+	// Transliteration set
+	const transliterationSetSource = fields['AS_non_latin_chars_in_the_mark_ST'];
+	const transliterationSetEnglish = fields['AS_non_latin_chars_in_the_mark_mean_ST'];
+	const hasTransliterationSet = transliterationSetSource || transliterationSetEnglish;
 
-	const englishTranslation = fields['AS_eng_translation_is_ST'];
-	const hasEnglishTranslation = englishTranslation ? 'yes' : null;
+	// Build translation set item
+	if (hasTranslationSet) {
+		const item = {};
+		
+		if (translationSetSource) {
+			item.hasNonEnglishWords = 'yes';
+			item.hasNonLatinCharacters = 'no';
+			item.latinCharacters = {
+				latinTranslation: translationSetSource,
+			};
+		}
+		
+		if (translationSetEnglish) {
+			item.hasEnglishTranslation = 'yes';
+			item.englishTranslation = translationSetEnglish;
+		}
+		
+		result.push(item);
+	}
 
-	return [
-		{
-			hasNonEnglishWords,
-			nonLatinCharacters,
-			...(hasEnglishTranslation && { hasEnglishTranslation }),
-			...(englishTranslation && { englishTranslation }),
-		},
-	];
+	// Build transliteration set item
+	if (hasTransliterationSet) {
+		const item = {};
+		
+		if (transliterationSetSource) {
+			item.hasNonEnglishWords = 'yes';
+			item.hasNonLatinCharacters = 'no';
+			item.latinCharacters = {
+				latinTranslation: transliterationSetSource,
+			};
+		}
+		
+		if (transliterationSetEnglish) {
+			item.hasEnglishTranslation = 'yes';
+			item.englishTranslation = transliterationSetEnglish;
+		}
+		
+		result.push(item);
+	}
+
+	// If both sets are empty, return default structure
+	if (result.length === 0) {
+		result.push({
+			hasNonEnglishWords: safeLookup(yesOrNoMap, fields['foreign_language']),
+		});
+	}
+
+	return result;
 }
 
 /**
@@ -567,6 +604,42 @@ function buildSection2f(fields) {
 }
 
 /**
+ * Builds prior registrations section
+ */
+function buildPriorRegistrationsSection(fields) {
+	const registrationFields = [
+		fields['AS_active_prior_registration_1_ST'],
+		fields['AS_active_prior_registration_2_ST'],
+		fields['AS_active_prior_registration_3_ST'],
+		fields['AS_active_prior_registration_4_ST'],
+	];
+
+	const registrations = [];
+
+	registrationFields.forEach((field) => {
+		if (!field) return;
+
+		// AS_active_prior_registration_4_ST may have multiple comma-separated values
+		const values = field.includes(',') ? field.split(',') : [field];
+
+		values.forEach((value) => {
+			const trimmedValue = value.trim();
+			if (trimmedValue) {
+				registrations.push({ registrationNumber: trimmedValue });
+			}
+		});
+	});
+
+	if (registrations.length === 0) {
+		return {};
+	}
+
+	return {
+		registrations,
+	};
+}
+
+/**
  * Builds additional information section
  */
 function buildAdditionalInformation(fields) {
@@ -575,13 +648,24 @@ function buildAdditionalInformation(fields) {
 	
 	// Build subsections
 	const disclaimerSection = buildDisclaimerSection(fields);
+	const priorRegistrationsSection = buildPriorRegistrationsSection(fields);
 	const meaningSignificanceSection = buildMeaningSignificanceSection(fields);
 	const section2f = buildSection2f(fields);
 	
+	// Build selectAdditionalInformation array
+	const selectAdditionalInformation = [];
+	if (hasAdditionalStatement) {
+		selectAdditionalInformation.push('disclaimer');
+	}
+	if (Object.keys(priorRegistrationsSection).length > 0) {
+		selectAdditionalInformation.push('priorRegistrations');
+	}
+	
 	// Build the additional information object
 	const additionalInfo = {
-		...(hasAdditionalStatement && { selectAdditionalInformation: ['disclaimer'] }),
+		...(selectAdditionalInformation.length > 0 && { selectAdditionalInformation }),
 		...(Object.keys(disclaimerSection).length > 0 && { disclaimerSection }),
+		...(Object.keys(priorRegistrationsSection).length > 0 && { priorRegistrationsSection }),
 		...(Object.keys(meaningSignificanceSection).length > 0 && { meaningSignificanceSection }),
 		...(Object.keys(section2f).length > 0 && { section2f }),
 	};
