@@ -787,6 +787,454 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             type: 'listitem',
                             version: 1,
                             value: 23
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Concurrent Use Information:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('AS_concurrent_use_info_ST'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 24
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Foreign Application:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('foreign_application_MC') === 'Yes' ? 'Yes' : 'No',
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 25
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Country of Foreign Filing:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('country_of_foreign_filing_'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 26
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Foreign Application Number:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('country_of_foreign_regis_'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 27
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Date of Foreign Filing:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('date_of_foreign_filing_'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 28
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'At this time, the applicant intends to rely on Section 44(e) as a basis for registration:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('foreign_application_rely_on_44e_cb') === '1' ? 'Yes' : 'No',
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 35
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'At this time, the applicant has another basis for registration (Section 1(a) or Section 1(b)):',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('foreign_application_rely_on_others_cb') === '1' ? 'Yes' : 'No',
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 36
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Foreign Registration:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('foreign_registration_MC') === 'Yes' ? 'Yes' : 'No',
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 29
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Country of Foreign Registration:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('country_of_foreign_regis_'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 30
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Foreign Registration Number:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('foreign_regis_number_'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 31
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Foreign Registration Date:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('foreign_regis_date_'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 32
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Foreign Registration Expiration (Required):',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('foreign_regis_expiry_'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 33
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Foreign Registration Renewal Date (Insert date, if applicable):',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('foreign_regis_renewal_date_'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 34
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'The FR includes a claim of Standard Characters or the country of origin Std Character equivalent:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('foreign_regis_includes_standard_characters_cb') === '1' ? 'Yes' : 'No',
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 37
                         }
                     ],
                     direction: 'ltr',

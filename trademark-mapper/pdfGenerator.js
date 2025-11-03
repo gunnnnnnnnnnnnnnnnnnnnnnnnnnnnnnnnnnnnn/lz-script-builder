@@ -110,6 +110,20 @@ export const generateProoferPdf = (prooferData, processingOrderId) => {
             addField('Date of Use of the Mark in Commerce at least as (MM/DD/YYYY):', getField('AS_mark_date_of_use_in_commerce_ST'));
             addField('STIPPLING AS A FEATURE OF THE MARK: The stippling is a feature and does not indicate color:', getField('AS_stippling_as_feature_of_the_mark_CB') === '1' ? 'Yes' : 'No');
             addField('STIPPLING FOR SHADING: The stippling is for shading purposes only:', getField('AS_stippling_for_shading_CB') === '1' ? 'Yes' : 'No');
+            addField('Concurrent Use Information:', getField('AS_concurrent_use_info_ST'));
+            addField('Foreign Application:', getField('foreign_application_MC') === 'Yes' ? 'Yes' : 'No');
+            addField('Country of Foreign Filing:', getField('country_of_foreign_filing_'));
+            addField('Foreign Application Number:', getField('country_of_foreign_regis_'));
+            addField('Date of Foreign Filing:', getField('date_of_foreign_filing_'));
+            addField('At this time, the applicant intends to rely on Section 44(e) as a basis for registration:', getField('foreign_application_rely_on_44e_cb') === '1' ? 'Yes' : 'No');
+            addField('At this time, the applicant has another basis for registration (Section 1(a) or Section 1(b)):', getField('foreign_application_rely_on_others_cb') === '1' ? 'Yes' : 'No');
+            addField('Foreign Registration:', getField('foreign_registration_MC') === 'Yes' ? 'Yes' : 'No');
+            addField('Country of Foreign Registration:', getField('country_of_foreign_regis_'));
+            addField('Foreign Registration Number:', getField('foreign_regis_number_'));
+            addField('Foreign Registration Date:', getField('foreign_regis_date_'));
+            addField('Foreign Registration Expiration (Required):', getField('foreign_regis_expiry_'));
+            addField('Foreign Registration Renewal Date (Insert date, if applicable):', getField('foreign_regis_renewal_date_'));
+            addField('The FR includes a claim of Standard Characters or the country of origin Std Character equivalent:', getField('foreign_regis_includes_standard_characters_cb') === '1' ? 'Yes' : 'No');
 
             // Footer with processing order ID
             doc.moveDown(2);

@@ -635,6 +635,9 @@ function buildSection2fWhenInPart(fields) {
 	// Set claimScope to "portion" for in-part claims
 	const claimScope = 'portion';
 
+
+	// TODO: get requirements
+
 	return {
 		claimScope,
 	};
@@ -677,6 +680,21 @@ function buildPriorRegistrationsSection(fields) {
 }
 
 /**
+ * Builds more information section
+ */
+function buildMoreInformationSection(fields) {
+	const moreInformationText = fields['AS_miscellaneous_statement_LT'];
+
+	if (!moreInformationText) {
+		return {};
+	}
+
+	return {
+		moreInformationText,
+	};
+}
+
+/**
  * Builds additional information section
  */
 function buildAdditionalInformation(fields) {
@@ -687,6 +705,7 @@ function buildAdditionalInformation(fields) {
 	const disclaimerSection = buildDisclaimerSection(fields);
 	const priorRegistrationsSection = buildPriorRegistrationsSection(fields);
 	const meaningSignificanceSection = buildMeaningSignificanceSection(fields);
+	const moreInformationSection = buildMoreInformationSection(fields);
 	
 	// Build section2f based on claim nature
 	let section2f = {};
@@ -712,6 +731,14 @@ function buildAdditionalInformation(fields) {
 	if (fields['AS_2_f_claim_nature_MC'] === 'Whole' || fields['AS_2_f_claim_nature_MC'] === 'In Part') {
 		selectAdditionalInformation.push('section2f');
 	}
+	// Add "concurrentUse" if AS_concurrent_use_info_ST is not empty or blank
+	if (fields['AS_concurrent_use_info_ST']) {
+		selectAdditionalInformation.push('concurrentUse');
+	}
+	// Add "moreInformation" if AS_miscellaneous_statement_LT is not empty or blank
+	if (fields['AS_miscellaneous_statement_LT']) {
+		selectAdditionalInformation.push('moreInformation');
+	}
 	
 	// Build the additional information object
 	const additionalInfo = {
@@ -720,6 +747,7 @@ function buildAdditionalInformation(fields) {
 		...(Object.keys(priorRegistrationsSection).length > 0 && { priorRegistrationsSection }),
 		...(Object.keys(meaningSignificanceSection).length > 0 && { meaningSignificanceSection }),
 		...(Object.keys(section2f).length > 0 && { section2f }),
+		...(Object.keys(moreInformationSection).length > 0 && { moreInformationSection }),
 	};
 	
 	return additionalInfo;
