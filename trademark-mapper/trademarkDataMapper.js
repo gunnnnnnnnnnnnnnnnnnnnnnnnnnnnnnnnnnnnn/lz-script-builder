@@ -563,9 +563,9 @@ function buildMeaningSignificanceSection(fields) {
 }
 
 /**
- * Builds section 2f
+ * Builds section 2f for whole mark claims
  */
-function buildSection2f(fields) {
+function buildSection2fWhenWhole(fields) {
 	const claimScopeRaw = fields['AS_2_f_claim_nature_MC'];
 	let claimScope = null;
 	if (claimScopeRaw) {
@@ -577,29 +577,66 @@ function buildSection2f(fields) {
 		}
 	}
 
-	// Determine condition
-	let conditionPriorRegistration = null;
+	// Build conditionPriorRegistration array
+	const conditionPriorRegistration = [];
+	
+	// Check for whole mark fields
+	const priorRegWholeCB = fields['AS_2fc_whole_is_based_on_active_prior_registration_CB'];
+	const priorRegWhole = fields['AS_2fc_whole_active_prior_registrations_ST'];
+	const fiveYearsWhole = fields['AS_2fc_whole_is_based_on_five_years_of_use_CB'];
+	const evidenceWholeCB = fields['AS_2fc_whole_is_based_on_avidence_CB'];
+	
+	// Check for in-part fields
 	const priorReg = fields['AS_2fc_inpart_is_based_on_active_prior_registration_ST'];
 	const fiveYears = fields['AS_2fc_inpart_is_based_on_five_years_of_use_ST'];
 	const evidence = fields['AS_2fc_inpart_is_based_on_avidence_ST'];
 
-	if (priorReg) {
-		conditionPriorRegistration = 'priorRegistration';
+	// Determine which prior registration text to use
+	let priorRegistrationsText = null;
+	
+	// Add to conditionPriorRegistration array based on fields
+	// Check for prior registration (checkbox or text field for whole mark, or text field for in-part)
+	if (priorRegWholeCB === '1' || priorRegWhole) {
+		conditionPriorRegistration.push('priorRegistration');
+		if (priorRegWhole) {
+			priorRegistrationsText = priorRegWhole;
+		}
+	} else if (priorReg) {
+		conditionPriorRegistration.push('priorRegistration');
+		priorRegistrationsText = priorReg;
+	}
+	
+	if (fiveYearsWhole === '1') {
+		conditionPriorRegistration.push('fiveYearsUse');
 	} else if (fiveYears) {
-		conditionPriorRegistration = 'fiveYearsUse';
-	} else if (evidence) {
-		conditionPriorRegistration = 'otherEvidence';
+		conditionPriorRegistration.push('fiveYearsUse');
+	}
+	
+	if (evidenceWholeCB === '1' || evidence) {
+		conditionPriorRegistration.push('otherEvidence');
 	}
 
-	if (!claimScope && !conditionPriorRegistration && !priorReg && !evidence) {
+	if (!claimScope && conditionPriorRegistration.length === 0 && !priorRegistrationsText && !evidence) {
 		return {};
 	}
 
 	return {
 		...(claimScope && { claimScope }),
-		...(conditionPriorRegistration && { conditionPriorRegistration }),
-		...(priorReg && { priorRegistrationsText: priorReg }),
+		...(conditionPriorRegistration.length > 0 && { conditionPriorRegistration }),
+		...(priorRegistrationsText && { priorRegistrationsText }),
 		...(evidence && { otherEvidenceDoc: evidence }),
+	};
+}
+
+/**
+ * Builds section 2f for in-part (portion) claims
+ */
+function buildSection2fWhenInPart(fields) {
+	// Set claimScope to "portion" for in-part claims
+	const claimScope = 'portion';
+
+	return {
+		claimScope,
 	};
 }
 
@@ -650,7 +687,14 @@ function buildAdditionalInformation(fields) {
 	const disclaimerSection = buildDisclaimerSection(fields);
 	const priorRegistrationsSection = buildPriorRegistrationsSection(fields);
 	const meaningSignificanceSection = buildMeaningSignificanceSection(fields);
-	const section2f = buildSection2f(fields);
+	
+	// Build section2f based on claim nature
+	let section2f = {};
+	if (fields['AS_2_f_claim_nature_MC'] === 'Whole') {
+		section2f = buildSection2fWhenWhole(fields);
+	} else if (fields['AS_2_f_claim_nature_MC'] === 'In Part') {
+		section2f = buildSection2fWhenInPart(fields);
+	}
 	
 	// Build selectAdditionalInformation array
 	const selectAdditionalInformation = [];
@@ -663,6 +707,10 @@ function buildAdditionalInformation(fields) {
 	// Add "meaning" if AS_WLN_in_mark_ST is not blank or null
 	if (fields['AS_WLN_in_mark_ST']) {
 		selectAdditionalInformation.push('meaning');
+	}
+	// Add "section2f" if AS_2_f_claim_nature_MC is "Whole" or "In Part"
+	if (fields['AS_2_f_claim_nature_MC'] === 'Whole' || fields['AS_2_f_claim_nature_MC'] === 'In Part') {
+		selectAdditionalInformation.push('section2f');
 	}
 	
 	// Build the additional information object
