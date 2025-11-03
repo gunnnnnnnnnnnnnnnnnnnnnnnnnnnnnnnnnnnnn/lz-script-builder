@@ -546,7 +546,7 @@ function buildDisclaimerSection(fields) {
  */
 function buildMeaningSignificanceSection(fields) {
 	const wordOrPhrase = fields['AS_WLN_in_mark_ST'];
-	const meaning = fields['AS_WLN_in_mark_term_of_art_ST'];
+	const meaning = fields['AS_WLN_in_mark__term_of_art_ST'];
 
 	if (!wordOrPhrase && !meaning) {
 		return {};
@@ -659,6 +659,10 @@ function buildAdditionalInformation(fields) {
 	}
 	if (Object.keys(priorRegistrationsSection).length > 0) {
 		selectAdditionalInformation.push('priorRegistrations');
+	}
+	// Add "meaning" if AS_WLN_in_mark_ST is not blank or null
+	if (fields['AS_WLN_in_mark_ST']) {
+		selectAdditionalInformation.push('meaning');
 	}
 	
 	// Build the additional information object

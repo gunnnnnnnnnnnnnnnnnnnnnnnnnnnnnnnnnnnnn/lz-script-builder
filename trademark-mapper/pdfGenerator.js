@@ -102,6 +102,14 @@ export const generateProoferPdf = (prooferData, processingOrderId) => {
             addField('If Logo is in Color, please complete the color list, otherwise leave blank if is Black & White:', getField('mark_detail_color'));
             addField('The following wording within the mark, has no any meaning in a foreign language:', getField('AS_non_trans_in_foreign_language_ST'));
             addField('Non-Latin characters in mark transliterate to following words & have no meaning in foreign language:', getField('AS_non_latin_chars_in_the_mark_no_mean_ST'));
+            addField('Please input here the word(s) appearing in the mark that has no significance nor is it a term of art:', getField('AS_WLN_in_the_mark_no_mean_ST'));
+            addField('The following word(s) have no meaning in a foreign language:', getField('AS_WLN_in_the_mark_no_mean_foreign_lang_ST'));
+            addField('Please input the name of whom consent(s) to register is made of record:', getField('AS_individual_name_with_consent_ST'));
+            addField('Check if name(s)/portrait(s)/and/or signature(s) in mark does not identify living individual:', getField('AS_NPS_identifies_individual_CB') === '1' ? 'Yes' : 'No');
+            addField('Date of Use of the Mark in another Form Anywhere at least as (MM/DD/YYYY):', getField('AS_mark_date_of_use_anywhere_ST'));
+            addField('Date of Use of the Mark in Commerce at least as (MM/DD/YYYY):', getField('AS_mark_date_of_use_in_commerce_ST'));
+            addField('STIPPLING AS A FEATURE OF THE MARK: The stippling is a feature and does not indicate color:', getField('AS_stippling_as_feature_of_the_mark_CB') === '1' ? 'Yes' : 'No');
+            addField('STIPPLING FOR SHADING: The stippling is for shading purposes only:', getField('AS_stippling_for_shading_CB') === '1' ? 'Yes' : 'No');
 
             // Footer with processing order ID
             doc.moveDown(2);
