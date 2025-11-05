@@ -382,7 +382,10 @@ function buildTranslationTransliteration(fields) {
 		
 		if (transliterationSetSource) {
 			item.hasNonEnglishWords = 'yes';
-			item.hasNonLatinCharacters = 'no';
+			item.hasNonLatinCharacters = 'yes';
+			item.nonLatinCharacters = {
+				nonLatinTransliteration: transliterationSetSource,
+			}
 			item.latinCharacters = {
 				latinTranslation: transliterationSetSource,
 			};
