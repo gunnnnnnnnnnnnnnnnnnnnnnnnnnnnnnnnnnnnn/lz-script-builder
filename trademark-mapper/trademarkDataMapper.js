@@ -9,7 +9,7 @@
  */
 
 import { entityTypeNameToId } from './entityTypeMap.js';
-import { stateNameToId } from './stateMap.js';
+import { stateNameToId, getStateNameById } from './stateMap.js';
 import { countryNameToId } from './countryMap.js';
 import { signatoryTitleToPositionMap } from './signatoryTitleMap.js';
 import { typeOfMarkToProtectMap } from './markTypeMap.js';
@@ -60,7 +60,7 @@ export const mapProoferToTrademarkExpert = (prooferData) => {
     
     const trademarkExpertData = {
 			attorney: buildAttorney(fields),
-			owners: buildOwners(fields),
+			owners: buildOwners(fields, groups),
 			markSelection: buildMarkSelection(fields),
 			goodsAndServices: buildGoodsAndServices(fields),
 			signatory: buildSignatory(fields, groups),
@@ -96,13 +96,187 @@ function buildAttorney(fields) {
 }
 
 /**
+ * Builds address for a joint individual owner
+ */
+function buildJointIndividualOwnerAddress(groups, ownerNumber) {
+	const getField = (fieldName) => getJointIndividualField(groups, fieldName, ownerNumber);
+	
+	const ownerStateAbbr = getField('owner_joint_info_state_MC');
+	const ownerState = getStateNameById(ownerStateAbbr);
+	const countryField = getField('owner_joint_info_country_MC');
+	const outsideUSField = getField('owner_joint_info_country_outside_US_ST');
+
+	// Determine owner country
+	let ownerCountry;
+	if (countryField === 'Other') {
+		ownerCountry = outsideUSField;
+	} else if (ownerState) {
+		ownerCountry = 'United States';
+	} else {
+		ownerCountry = getCountryNameById(countryField);
+	}
+
+	return {
+		ownerAddressLine1: getField('owner_joint_info_street_address_ST'),
+		ownerAddressLine2: getField('owner_joint_info_apt_no_ST'),
+		ownerCountry,
+		ownerCity: getField('owner_joint_info_city_ST'),
+		ownerState,
+		ownerZipCode: getField('owner_joint_info_zip_code_ST'),
+	};
+}
+
+/**
+ * Builds domicile address for a joint individual owner
+ */
+function buildJointIndividualDomicileAddress(groups, ownerNumber) {
+	const getField = (fieldName) => getJointIndividualField(groups, fieldName, ownerNumber);
+	
+	const domicileCountryField = getField('owner_joint_info_domicile_country_MC');
+	const domicileOutsideUSField = getField('owner_joint_info_domicile_country_outside_US_ST');
+	const domicileStateAbbr = getField('owner_joint_info_domicile_state_MC');
+	const domicileState = getStateNameById(domicileStateAbbr);
+
+	// Determine domicile country
+	let domicileCountry;
+	if (domicileCountryField === 'Other') {
+		domicileCountry = domicileOutsideUSField;
+	} else {
+		const countryField = domicileCountryField || domicileOutsideUSField;
+		domicileCountry = getCountryNameById(countryField);
+	}
+
+	return {
+		domicileAddressLine1: getField('owner_joint_info_domicile_street_address_ST'),
+		domicileCountry,
+		domicileCity: getField('owner_joint_info_domicile_city_ST'),
+		domicileState,
+		domicileZipCode: getField('owner_joint_info_domicile_zip_code_ST'),
+	};
+}
+
+/**
+ * Checks if domicile data exists for a joint individual owner
+ */
+function checkJointIndividualHasDomicileData(groups, ownerNumber) {
+	const getField = (fieldName) => getJointIndividualField(groups, fieldName, ownerNumber);
+	
+	return !!(
+		getField('owner_joint_info_domicile_city_ST') ||
+		getField('owner_joint_info_domicile_country_MC') ||
+		getField('owner_joint_info_domicile_country_outside_US_ST') ||
+		getField('owner_joint_info_domicile_state_MC') ||
+		getField('owner_joint_info_domicile_street_address_ST') ||
+		getField('owner_joint_info_domicile_zip_code_ST')
+	);
+}
+
+/**
+ * Gets a field value from group answers by field name and owner number
+ */
+function getJointIndividualField(groups, fieldName, ownerNumber) {
+	const jointInfoGroup = groups['owner_joint_info'];
+	if (!jointInfoGroup || jointInfoGroup.length === 0) {
+		return null;
+	}
+	
+	// Find the field with matching name and groupIndex
+	const field = jointInfoGroup.find(f => 
+		f.fieldName === `${fieldName}_${ownerNumber}` && 
+		f.groupIndex === ownerNumber
+	);
+	
+	return field ? field.fieldValue : null;
+}
+
+/**
+ * Builds owners array for Joint Individuals (creates 2 owners)
+ */
+function buildJointIndividualOwners(fields, groups) {
+	const owners = [];
+
+	// Build both owner 1 and owner 2
+	for (let ownerNumber = 1; ownerNumber <= 2; ownerNumber++) {
+		// Helper to get field value for this owner
+		const getField = (fieldName) => getJointIndividualField(groups, fieldName, ownerNumber);
+		
+		// Owner selection - both are individual type
+		const ownerSelection = {
+			ownerType: 'individual',
+			incorporationCountry: 'United States',
+		};
+
+		// Individual owner data
+		const individualOwner = {
+			citizenshipCountry: getCountryNameById(getField('owner_joint_info_country')),
+			firstName: getField('owner_joint_info_first'),
+			middleName: getField('owner_joint_info_middle_initial_ST'),
+			lastName: getField('owner_joint_info_last'),
+		};
+
+		// Build owner address
+		const ownerAddress = buildJointIndividualOwnerAddress(groups, ownerNumber);
+
+		// Build domicile address and check if it's different
+		const domicileAddress = buildJointIndividualDomicileAddress(groups, ownerNumber);
+		const hasDomicileData = checkJointIndividualHasDomicileData(groups, ownerNumber);
+		const isDomicileDifferent = hasDomicileData && isAddressDifferent(ownerAddress, domicileAddress);
+		const differentDomicile = isDomicileDifferent ? true : false;
+
+		// DBA/AKA/TA logic - only for first owner
+		let hasDBA = false;
+		let dbaType = null;
+		let alternateName = null;
+		
+		if (ownerNumber === 1) {
+			const dbaChoiceField = fields['DBA_AKA_TA_FKA_Choice_MC'];
+			alternateName = fields['DBA_AKA_TA_FKA_Value_ST'];
+			
+			if (dbaChoiceField) {
+				const upperChoice = dbaChoiceField.toUpperCase();
+				if (upperChoice.includes('DBA')) {
+					hasDBA = true;
+					dbaType = 'dba';
+				} else if (upperChoice.includes('TA')) {
+					dbaType = 'ta';
+				} else if (upperChoice.includes('AKA')) {
+					dbaType = 'aka';
+				}
+			}
+		}
+
+		const ownerItem = {
+			ownerSelection,
+			individualOwner,
+			ownerAddress,
+			differentDomicile,
+			...(isDomicileDifferent && { domicileAddress }),
+			ownerEmailAddress: getField('owner_joint_info_email_address_ST'),
+			ownerPhoneNumber: formatPhoneNumber(getField('owner_joint_info_phone_number_ST')),
+			hasDBA,
+			...(dbaType && { dbaType }),
+			...(alternateName && { alternateName }),
+		};
+
+		owners.push(ownerItem);
+	}
+
+	return owners;
+}
+
+/**
  * Builds the owners array
  */
-function buildOwners(fields) {
+function buildOwners(fields, groups) {
 	const applicantType = fields['applicant_type_MC'];
 	
 	if (!applicantType) {
 		return [];
+	}
+
+	// Handle Joint Individuals separately - creates 2 owners
+	if (applicantType === 'Joint Individuals') {
+		return buildJointIndividualOwners(fields, groups);
 	}
 
 	// Determine owner type

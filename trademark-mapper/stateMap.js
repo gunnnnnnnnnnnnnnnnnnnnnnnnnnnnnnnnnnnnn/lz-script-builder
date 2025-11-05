@@ -65,3 +65,81 @@ export const stateNameToId = {
 	'armed forces in the pacific': 'af_pacific',
 };
 
+/**
+ * Reverse map from state abbreviation to full state name.
+ * Lookup is case-insensitive.
+ */
+export const stateIdToName = {
+	'al': 'Alabama',
+	'ak': 'Alaska',
+	'as': 'American Samoa',
+	'az': 'Arizona',
+	'ar': 'Arkansas',
+	'ca': 'California',
+	'co': 'Colorado',
+	'ct': 'Connecticut',
+	'de': 'Delaware',
+	'dc': 'District of Columbia',
+	'fl': 'Florida',
+	'ga': 'Georgia',
+	'gu': 'Guam',
+	'hi': 'Hawaii',
+	'id': 'Idaho',
+	'il': 'Illinois',
+	'in': 'Indiana',
+	'ia': 'Iowa',
+	'ks': 'Kansas',
+	'ky': 'Kentucky',
+	'la': 'Louisiana',
+	'me': 'Maine',
+	'md': 'Maryland',
+	'ma': 'Massachusetts',
+	'mi': 'Michigan',
+	'mn': 'Minnesota',
+	'ms': 'Mississippi',
+	'mo': 'Missouri',
+	'mt': 'Montana',
+	'ne': 'Nebraska',
+	'nv': 'Nevada',
+	'nh': 'New Hampshire',
+	'nj': 'New Jersey',
+	'nm': 'New Mexico',
+	'ny': 'New York',
+	'nc': 'North Carolina',
+	'nd': 'North Dakota',
+	'mp': 'Northern Mariana Islands',
+	'oh': 'Ohio',
+	'ok': 'Oklahoma',
+	'or': 'Oregon',
+	'pa': 'Pennsylvania',
+	'pr': 'Puerto Rico',
+	'ri': 'Rhode Island',
+	'sc': 'South Carolina',
+	'sd': 'South Dakota',
+	'tn': 'Tennessee',
+	'tx': 'Texas',
+	'um': 'United States Minor Outlying Islands',
+	'ut': 'Utah',
+	'vt': 'Vermont',
+	'vi': 'Virgin Islands, U.S.',
+	'va': 'Virginia',
+	'wa': 'Washington',
+	'wv': 'West Virginia',
+	'wi': 'Wisconsin',
+	'wy': 'Wyoming',
+	'af_americas': 'Armed Forces in Americas excluding Canada',
+	'af_europe': 'Armed Forces in Europe, the Middle East, Africa, and Canada',
+	'af_pacific': 'Armed Forces in the Pacific',
+};
+
+/**
+ * Converts a state abbreviation to its full name.
+ * @param {string} stateId - The state abbreviation (e.g., "CA")
+ * @returns {string|null} The full state name (e.g., "California") or null if not found
+ */
+export const getStateNameById = (stateId) => {
+	if (!stateId) return null;
+	const lowerCaseId = stateId.toLowerCase();
+	return stateIdToName[lowerCaseId] || null;
+};
+
