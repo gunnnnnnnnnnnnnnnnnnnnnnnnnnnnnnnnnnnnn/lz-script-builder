@@ -211,7 +211,15 @@ function buildOwnerAddress(fields) {
 	const ownerState = fields['State'];
 	
 	// If state is provided, country is United States
-	const ownerCountry = ownerState ? 'United States' : getCountryNameById(fields['country']);
+	// If country is 'Other', use the Outside_US_ field, otherwise use getCountryNameById
+	let ownerCountry;
+	if (fields['country'] === 'Other') {
+		ownerCountry = fields['Outside_US_'];
+	} else if (ownerState) {
+		ownerCountry = 'United States';
+	} else  {
+		ownerCountry = getCountryNameById(fields['country']);
+	}
 
 	return {
 		ownerAddressLine1: fields['street_address'],
@@ -227,11 +235,18 @@ function buildOwnerAddress(fields) {
  * Builds domicile address section
  */
 function buildDomicileAddress(fields) {
-	const domicileCountry = fields['domicile_country_ST'] || fields['domicile_country_outside_US_ST'];
+	// If domicile_country_ST is 'Other', use the domicile_country_outside_US_ST field
+	let domicileCountry;
+	if (fields['domicile_country_ST'] === 'Other') {
+		domicileCountry = fields['domicile_country_outside_US_ST'];
+	} else {
+		const countryField = fields['domicile_country_ST'] || fields['domicile_country_outside_US_ST'];
+		domicileCountry = getCountryNameById(countryField);
+	}
 
 	return {
 		domicileAddressLine1: fields['domicile_street_address_ST'],
-		domicileCountry: getCountryNameById(domicileCountry),
+		domicileCountry,
 		domicileCity: fields['domicile_city_ST'],
 		domicileState: fields['domicile_state_ST'],
 		domicileZipCode: fields['domicile_zip_code_ST'],
