@@ -56,23 +56,34 @@ export const generateProoferPdf = (prooferData, processingOrderId) => {
             // Create field lookup
             const fieldLookup = createFieldLookup(prooferData.fieldAnswers || []);
 
-            // Helper to get field value
-            const getField = (fieldName) => fieldLookup[fieldName] || '';
+            // Helper to get field value - ensure it returns a clean string
+            const getField = (fieldName) => {
+                const value = fieldLookup[fieldName];
+                if (value === null || value === undefined) {
+                    return '';
+                }
+                // Replace \r\n and \r with \n to avoid rendering issues in PDF
+                return String(value).replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+            };
 
             // Helper to add a field with label on one line and value on the next (matching internal note structure)
             const addField = (label, value) => {
+                // Ensure label and value are clean strings and replace \r\n and \r with \n
+                const cleanLabel = String(label || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+                const cleanValue = String(value || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+                
                 // Add bold label
                 doc.font('Helvetica-Bold')
                    .fontSize(10)
                    .fillColor('#000000')
-                   .text(label);
+                   .text(cleanLabel);
                 
                 // Add value on next line (if it exists)
-                if (value && value !== '') {
+                if (cleanValue && cleanValue !== '') {
                     doc.font('Helvetica')
                        .fontSize(10)
                        .fillColor('#000000')
-                       .text(value);
+                       .text(cleanValue);
                 }
                 
                 doc.moveDown(0.5);
