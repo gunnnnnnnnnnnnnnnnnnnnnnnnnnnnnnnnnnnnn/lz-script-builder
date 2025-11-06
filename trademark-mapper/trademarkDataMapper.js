@@ -827,12 +827,57 @@ function buildSection2fWhenInPart(fields) {
 	// Set claimScope to "portion" for in-part claims
 	const claimScope = 'portion';
 
+	// Get the claimed portion fields
+	const fiveYearsUseValue = fields['AS_2fc_inpart_is_based_on_five_years_of_use_ST'];
+	const priorRegistrationValue = fields['AS_2fc_inpart_is_based_on_active_prior_registration_ST'];
+	const evidenceValue = fields['AS_2fc_inpart_is_based_on_avidence_ST'];
+	const priorRegistrationsText = fields['AS_2fc_inpart_active_prior_registrations_ST'];
+	
+	// Build conditionPriorRegistration array
+	const conditionPriorRegistration = [];
+	
+	// Build claimedPortion with multiple lines
+	const claimedPortionLines = [];
+	
+	// Add five years use line if present
+	if (fiveYearsUseValue) {
+		conditionPriorRegistration.push('fiveYearsUse');
+		claimedPortionLines.push(`In Part for the 2(f) Claim of Acquired Distinctiveness if based on Five or More Years' Use: ${fiveYearsUseValue}`);
+	}
+	
+	// Add prior registration line if present
+	if (priorRegistrationValue) {
+		conditionPriorRegistration.push('priorRegistration');
+		claimedPortionLines.push(`In Part for the 2(f) Claim of Acquired Distinctiveness if based on Active Prior Registration(s): ${priorRegistrationValue}`);
+	}
+	
+	// Add evidence line if present
+	if (evidenceValue) {
+		conditionPriorRegistration.push('otherEvidence');
+		claimedPortionLines.push(`In Part for 2(f) Claim of Acquired Distinctiveness if based on Evidence: ${evidenceValue}`);
+	}
+	
+	// Join lines with newline if there are multiple
+	const claimedPortion = claimedPortionLines.length > 0 ? claimedPortionLines.join('\n') : null;
 
-	// TODO: get requirements
-
-	return {
+	// Build the result object
+	const result = {
 		claimScope,
 	};
+	
+	if (claimedPortion) {
+		result.claimedPortion = claimedPortion;
+	}
+	
+	if (conditionPriorRegistration.length > 0) {
+		result.conditionPriorRegistration = conditionPriorRegistration;
+	}
+	
+	if (priorRegistrationsText) {
+		result.priorRegistrationsText = priorRegistrationsText;
+	}
+
+	return result;
 }
 
 /**
