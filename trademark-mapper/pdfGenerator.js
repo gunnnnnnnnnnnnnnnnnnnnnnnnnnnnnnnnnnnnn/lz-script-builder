@@ -135,6 +135,10 @@ export const generateProoferPdf = (prooferData, processingOrderId) => {
             addField('Foreign Registration Expiration (Required):', getField('foreign_regis_expiry_'));
             addField('Foreign Registration Renewal Date (Insert date, if applicable):', getField('foreign_regis_renewal_date_'));
             addField('The FR includes a claim of Standard Characters or the country of origin Std Character equivalent:', getField('foreign_regis_includes_standard_characters_cb') === '1' ? 'Yes' : 'No');
+            addField('Contact Name:', getField('Contact_Name'));
+            addField('Number of Classes:', getField('total___classes_'));
+            addField('Form Type:', getField('form_type_MC'));
+            addField('Additional Trademark Statement?', getField('additional_trademark_statement_MC'));
 
             // Footer with processing order ID
             doc.moveDown(2);

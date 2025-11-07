@@ -1235,6 +1235,134 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             type: 'listitem',
                             version: 1,
                             value: 37
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Contact Name:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('Contact_Name'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 38
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Number of Classes:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('total___classes_'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 39
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Form Type:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('form_type_MC'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 40
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Additional Trademark Statement?',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('additional_trademark_statement_MC'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 41
                         }
                     ],
                     direction: 'ltr',
