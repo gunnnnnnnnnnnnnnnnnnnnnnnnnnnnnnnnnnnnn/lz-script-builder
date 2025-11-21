@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // ENV
-export const ENVIRONMENT = 'q'; // p | q
+export const ENVIRONMENT = 'p'; // p | q
 
 const CONFIG_BY_ENV = {
     'p': {
