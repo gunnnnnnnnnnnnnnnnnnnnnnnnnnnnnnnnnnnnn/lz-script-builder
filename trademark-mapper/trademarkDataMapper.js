@@ -370,11 +370,21 @@ function buildOwnerSelection(fields, applicantType, ownerType) {
 	
 	const incorporationCountry = getCountryNameById(country);
 
-	const entityType = safeLookup(entityTypeNameToId, applicantType);
+	// Special case: if applicantType is "Other", set entityType to "Entity not listed"
+	let entityType;
+	let entityTypeOther = null;
+	
+	if (applicantType === 'Other') {
+		entityType = 'Entity not listed';
+		// Map nature_of_other_entity_ to entityTypeOther
+		entityTypeOther = fields['nature_of_other_entity_'] || null;
+	} else {
+		entityType = safeLookup(entityTypeNameToId, applicantType);
+		// If applicantType is not in the entityTypeNameToId map, use it as entityTypeOther
+		entityTypeOther = !entityType ? applicantType : null;
+	}
+	
 	const foreignEntityType_FreeForm = entityType || applicantType;
-
-	// If applicantType is not in the entityTypeNameToId map, use it as entityTypeOther
-	const entityTypeOther = !entityType ? applicantType : null;
 
 	return {
 		ownerType,
