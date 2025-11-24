@@ -360,7 +360,14 @@ function buildOwners(fields, groups) {
  * Builds owner selection section
  */
 function buildOwnerSelection(fields, applicantType, ownerType) {
-	const country = fields['country'] || fields['entity_country'] || 'us';
+	// If country is 'Other', use entity_country field instead
+	let country = fields['country'];
+	if (country === 'Other') {
+		country = fields['entity_country'];
+	}
+	// Fallback to entity_country or 'us'
+	country = country || fields['entity_country'] || 'us';
+	
 	const incorporationCountry = getCountryNameById(country);
 
 	const entityType = safeLookup(entityTypeNameToId, applicantType);
