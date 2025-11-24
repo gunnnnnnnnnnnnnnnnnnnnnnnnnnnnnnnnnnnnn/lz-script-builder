@@ -1201,6 +1201,121 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 1,
                                     mode: 'normal',
                                     style: '',
+                                    text: 'Please input here the word(s) appearing in the mark that has no significance nor is it a term of art:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('AS_WLN_in_the_mark_no_mean_ST'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 1
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'The following word(s) have no meaning in a foreign language:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('AS_WLN_in_the_mark_no_mean_foreign_lang_ST'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 2
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 12: Name(s), Portrait(s), Signature(s) of Individual(s) (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Name(s), Portrait(s), Signature(s) of Individual(s)',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Name(s), Portrait(s), Signature(s) items as bullets
+                {
+                    children: [
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
                                     text: 'Please input the name of whom consent(s) to register is made of record:',
                                     type: 'text',
                                     version: 1
@@ -1287,7 +1402,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                     type: 'paragraph',
                     version: 1
                 },
-                // Section 12: Use of the mark in another form (bold heading, not a bullet)
+                // Section 13: Use of the mark in another form (bold heading, not a bullet)
                 {
                     children: [
                         {
@@ -1600,230 +1715,6 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                     type: 'paragraph',
                     version: 1
                 },
-                // Section 15: Mark Details
-                {
-                    children: [
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Please input here the word(s) appearing in the mark that has no significance nor is it a term of art:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('AS_WLN_in_the_mark_no_mean_ST'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 16
-                        },
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'The following word(s) have no meaning in a foreign language:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('AS_WLN_in_the_mark_no_mean_foreign_lang_ST'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 17
-                        },
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Please input the name of whom consent(s) to register is made of record:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('AS_individual_name_with_consent_ST'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 18
-                        },
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Check if name(s)/portrait(s)/and/or signature(s) in mark does not identify living individual:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('AS_NPS_identifies_individual_CB') === '1' ? 'Yes' : 'No',
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 19
-                        },
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Date of Use of the Mark in another Form Anywhere at least as (MM/DD/YYYY):',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('AS_mark_date_of_use_anywhere_ST'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 20
-                        },
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Date of Use of the Mark in Commerce at least as (MM/DD/YYYY):',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('AS_mark_date_of_use_in_commerce_ST'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 2
-                        }
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    type: 'list',
-                    version: 1,
-                    listType: 'bullet',
-                    start: 1,
-                    tag: 'ul'
-                },
-                // Divider
-                {
-                    children: [
-                        {
-                            detail: 0,
-                            format: 0,
-                            mode: 'normal',
-                            style: '',
-                            text: '==============================================',
-                            type: 'text',
-                            version: 1
-                        }
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    type: 'paragraph',
-                    version: 1
-                },
                 // Section 15: Foreign Trademark Information (bold heading, not a bullet)
                 {
                     children: [
@@ -1930,7 +1821,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 0,
                                     mode: 'normal',
                                     style: '',
-                                    text: getFieldValue('country_of_foreign_regis_'),
+                                    text: getFieldValue('foreign_application_number_'),
                                     type: 'text',
                                     version: 1
                                 }
@@ -2047,25 +1938,6 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                     listType: 'bullet',
                     start: 1,
                     tag: 'ul'
-                },
-                // Divider
-                {
-                    children: [
-                        {
-                            detail: 0,
-                            format: 0,
-                            mode: 'normal',
-                            style: '',
-                            text: '==============================================',
-                            type: 'text',
-                            version: 1
-                        }
-                    ],
-                    direction: 'ltr',
-                    format: '',
-                    indent: 0,
-                    type: 'paragraph',
-                    version: 1
                 },
                 // Section 6: Foreign Registration
                 {

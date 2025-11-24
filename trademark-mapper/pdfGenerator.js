@@ -257,6 +257,17 @@ export const generateProoferPdf = (prooferData, processingOrderId) => {
                .text('Meaning or significance of wording, letter(s), or number(s)');
             doc.moveDown(0.5);
             
+            addField('Please input here the word(s) appearing in the mark that has no significance nor is it a term of art:', getField('AS_WLN_in_the_mark_no_mean_ST'));
+            addField('The following word(s) have no meaning in a foreign language:', getField('AS_WLN_in_the_mark_no_mean_foreign_lang_ST'));
+            addDivider();
+            
+            // Name(s), Portrait(s), Signature(s) of Individual(s) Section
+            doc.font('Helvetica-Bold')
+               .fontSize(12)
+               .fillColor('#000000')
+               .text('Name(s), Portrait(s), Signature(s) of Individual(s)');
+            doc.moveDown(0.5);
+            
             addField('Please input the name of whom consent(s) to register is made of record:', getField('AS_individual_name_with_consent_ST'));
             addField('Check if name(s)/portrait(s)/and/or signature(s) in mark does not identify living individual:', getField('AS_NPS_identifies_individual_CB') === '1' ? 'Yes' : 'No');
             addDivider();
@@ -302,7 +313,7 @@ export const generateProoferPdf = (prooferData, processingOrderId) => {
             
             addField('Foreign Application:', getField('foreign_application_MC') === 'Yes' ? 'Yes' : 'No');
             addField('Country of Foreign Filing:', getField('country_of_foreign_filing_'));
-            addField('Foreign Application Number:', getField('country_of_foreign_regis_'));
+            addField('Foreign Application Number:', getField('foreign_application_number_'));
             addField('Date of Foreign Filing:', getField('date_of_foreign_filing_'));
             addField('At this time, the applicant intends to rely on Section 44(e) as a basis for registration:', getField('foreign_application_rely_on_44e_cb') === '1' ? 'Yes' : 'No');
             addField('At this time, the applicant has another basis for registration (Section 1(a) or Section 1(b)):', getField('foreign_application_rely_on_others_cb') === '1' ? 'Yes' : 'No');
