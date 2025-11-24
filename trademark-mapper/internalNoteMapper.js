@@ -20,6 +20,49 @@ export const buildInternalNoteFromProofer = (prooferData) => {
         return fieldLookup[fieldName] || '';
     };
 
+    // Helper function to remove divider lines (lines with only "=" characters)
+    const cleanDividerLines = (text) => {
+        if (!text) return '';
+        return text
+            .split('\n')
+            .filter(line => !line.trim().match(/^=+$/))
+            .join('\n')
+            .trim();
+    };
+
+    // Helper function to convert text with newlines into text/linebreak nodes
+    const createTextNodesWithLinebreaks = (text) => {
+        if (!text) return [];
+        
+        const cleanText = cleanDividerLines(text);
+        // Split by \r\n, \n, or \r
+        const lines = cleanText.split(/\r\n|\r|\n/);
+        const nodes = [];
+        
+        lines.forEach((line, index) => {
+            // Add text node for the line
+            nodes.push({
+                detail: 0,
+                format: 0,
+                mode: 'normal',
+                style: '',
+                text: line,
+                type: 'text',
+                version: 1
+            });
+            
+            // Add linebreak after each line except the last one
+            if (index < lines.length - 1) {
+                nodes.push({
+                    type: 'linebreak',
+                    version: 1
+                });
+            }
+        });
+        
+        return nodes;
+    };
+
     return {
         root: {
             children: [
@@ -41,6 +84,95 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                     type: 'paragraph',
                     version: 1
                 },
+                // Empty line between "Migrated from Proofer" and "Intake Notes"
+                {
+                    children: [],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 1: Intake Notes (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Intake Notes',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Intake Notes value as bullet
+                {
+                    children: [
+                        {
+                            children: createTextNodesWithLinebreaks(getFieldValue('applicant_information_internal_note_LT')),
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 2: Applicant Information (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Applicant Information',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Applicant Information items as bullets
                 {
                     children: [
                         {
@@ -50,16 +182,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 1,
                                     mode: 'normal',
                                     style: '',
-                                    text: 'Intake Notes:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: ' ',
+                                    text: 'Name of Sole Proprietor Petitioner:',
                                     type: 'text',
                                     version: 1
                                 },
@@ -72,7 +195,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 0,
                                     mode: 'normal',
                                     style: '',
-                                    text: getFieldValue('applicant_information_internal_note_LT'),
+                                    text: getFieldValue('Name_of_Petitioner'),
                                     type: 'text',
                                     version: 1
                                 }
@@ -91,7 +214,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 1,
                                     mode: 'normal',
                                     style: '',
-                                    text: 'Description of goods and/or Services: ',
+                                    text: 'Partner\'s name, Citizenship OR where legally organized, Entity type (Use comma to separate):',
                                     type: 'text',
                                     version: 1
                                 },
@@ -104,7 +227,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 0,
                                     mode: 'normal',
                                     style: '',
-                                    text: getFieldValue('list_goods_or_services'),
+                                    text: getFieldValue('US_applicants_only_partnership'),
                                     type: 'text',
                                     version: 1
                                 }
@@ -115,6 +238,172 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             type: 'listitem',
                             version: 1,
                             value: 2
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 3: Address & Contact Information (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Address & Contact Information',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Address & Contact Information items as bullets
+                {
+                    children: [
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Contact Name:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('Contact_Name'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 4: Mark & Filing Format (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Mark & Filing Format',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Mark & Filing Format items as bullets
+                {
+                    children: [
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Literal Element. Otherwise leave blank:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('Literal_Element_Only'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 1
                         },
                         {
                             children: [
@@ -123,7 +412,197 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 1,
                                     mode: 'normal',
                                     style: '',
-                                    text: 'International Class Number: ',
+                                    text: 'If Logo is in Color, please complete the color list, otherwise leave blank if is Black & White:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('mark_detail_color'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 2
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 5: Goods & Services (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Goods & Services',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Goods & Services items as bullets
+                {
+                    children: [
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Number of Classes:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('total___classes_'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 1
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Description of goods and/or Services:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                ...createTextNodesWithLinebreaks(getFieldValue('list_goods_or_services'))
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 2
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 6: Goods and Services for Used in Commerce (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Goods and Services for Used in Commerce',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Goods and Services for Used in Commerce items as bullets
+                {
+                    children: [
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'International Class Number:',
                                     type: 'text',
                                     version: 1
                                 },
@@ -146,7 +625,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 3
+                            value: 1
                         },
                         {
                             children: [
@@ -155,7 +634,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 1,
                                     mode: 'normal',
                                     style: '',
-                                    text: 'Date of First Use Anywhere: ',
+                                    text: 'Date of First Use Anywhere:',
                                     type: 'text',
                                     version: 1
                                 },
@@ -178,7 +657,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 4
+                            value: 2
                         },
                         {
                             children: [
@@ -187,7 +666,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 1,
                                     mode: 'normal',
                                     style: '',
-                                    text: 'Date of First Use in Commerce: ',
+                                    text: 'Date of First Use in Commerce:',
                                     type: 'text',
                                     version: 1
                                 },
@@ -210,7 +689,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 5
+                            value: 3
                         },
                         {
                             children: [
@@ -269,12 +748,12 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     version: 1
                                 }
                             ],
-                            direction: null,
+                            direction: 'ltr',
                             format: '',
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 7
+                            value: 5
                         },
                         {
                             children: [
@@ -306,7 +785,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 8
+                            value: 6
                         },
                         {
                             children: [
@@ -323,23 +802,66 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     type: 'linebreak',
                                     version: 1
                                 },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('gs_uic_G_S_filing_basis_internal_note_LT'),
-                                    type: 'text',
-                                    version: 1
-                                }
+                                ...createTextNodesWithLinebreaks(getFieldValue('gs_uic_G_S_filing_basis_internal_note_LT'))
                             ],
                             direction: 'ltr',
                             format: '',
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 9
-                        },
+                            value: 7
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 7: Form Type (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Form Type',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Form Type items as bullets
+                {
+                    children: [
                         {
                             children: [
                                 {
@@ -347,7 +869,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 1,
                                     mode: 'normal',
                                     style: '',
-                                    text: 'Name of Sole Proprietor Petitioner:',
+                                    text: 'Form Type:',
                                     type: 'text',
                                     version: 1
                                 },
@@ -360,7 +882,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 0,
                                     mode: 'normal',
                                     style: '',
-                                    text: getFieldValue('Name_of_Petitioner'),
+                                    text: getFieldValue('form_type_MC'),
                                     type: 'text',
                                     version: 1
                                 }
@@ -370,8 +892,59 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 10
-                        },
+                            value: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 8: Additional Statement (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Additional Statement',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Additional Statement items as bullets
+                {
+                    children: [
                         {
                             children: [
                                 {
@@ -379,7 +952,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 1,
                                     mode: 'normal',
                                     style: '',
-                                    text: 'Partner\'s name, Citizenship OR where legally organized, Entity type (Use comma to separate):',
+                                    text: 'Additional Trademark Statement?',
                                     type: 'text',
                                     version: 1
                                 },
@@ -392,7 +965,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                                     format: 0,
                                     mode: 'normal',
                                     style: '',
-                                    text: getFieldValue('US_applicants_only_partnership'),
+                                    text: getFieldValue('additional_trademark_statement_MC'),
                                     type: 'text',
                                     version: 1
                                 }
@@ -402,72 +975,59 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 11
-                        },
+                            value: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
                         {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Literal Element. Otherwise leave blank:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('Literal_Element_Only'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 12
-                        },
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 9: Translation (English Translation & Wording) (bold heading, not a bullet)
+                {
+                    children: [
                         {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'If Logo is in Color, please complete the color list, otherwise leave blank if is Black & White:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('mark_detail_color'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 13
-                        },
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Translation (English Translation & Wording)',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Translation items as bullets
+                {
+                    children: [
                         {
                             children: [
                                 {
@@ -498,8 +1058,59 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 14
-                        },
+                            value: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 10: Transliteration (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Transliteration',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Transliteration items as bullets
+                {
+                    children: [
                         {
                             children: [
                                 {
@@ -530,8 +1141,468 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 15
+                            value: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 11: Meaning or significance of wording, letter(s), or number(s) (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Meaning or significance of wording, letter(s), or number(s)',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Meaning or significance items as bullets
+                {
+                    children: [
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Please input the name of whom consent(s) to register is made of record:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('AS_individual_name_with_consent_ST'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 1
                         },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Check if name(s)/portrait(s)/and/or signature(s) in mark does not identify living individual:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('AS_NPS_identifies_individual_CB') === '1' ? 'Yes' : 'No',
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 2
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 12: Use of the mark in another form (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Use of the mark in another form',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Use of the mark in another form items as bullets
+                {
+                    children: [
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Date of Use of the Mark in another Form Anywhere at least as (MM/DD/YYYY):',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('AS_mark_date_of_use_anywhere_ST'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 1
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Date of Use of the Mark in Commerce at least as (MM/DD/YYYY):',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('AS_mark_date_of_use_in_commerce_ST'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 2
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 13: Concurrent & Miscellaneous (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Concurrent & Miscellaneous',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Concurrent & Miscellaneous items as bullets
+                {
+                    children: [
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Concurrent Use Information:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('AS_concurrent_use_info_ST'),
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 14: Stippling Information (bold heading, not a bullet)
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Stippling Information',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Stippling Information items as bullets
+                {
+                    children: [
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Stippling as a Feature of the Mark:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('AS_stippling_as_feature_of_the_mark_CB') === '1' ? 'Yes' : 'No',
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 1
+                        },
+                        {
+                            children: [
+                                {
+                                    detail: 0,
+                                    format: 1,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: 'Stippling for Shading:',
+                                    type: 'text',
+                                    version: 1
+                                },
+                                {
+                                    type: 'linebreak',
+                                    version: 1
+                                },
+                                {
+                                    detail: 0,
+                                    format: 0,
+                                    mode: 'normal',
+                                    style: '',
+                                    text: getFieldValue('AS_stippling_for_shading_CB') === '1' ? 'Yes' : 'No',
+                                    type: 'text',
+                                    version: 1
+                                }
+                            ],
+                            direction: 'ltr',
+                            format: '',
+                            indent: 0,
+                            type: 'listitem',
+                            version: 1,
+                            value: 2
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 15: Mark Details
+                {
+                    children: [
                         {
                             children: [
                                 {
@@ -722,104 +1793,59 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 21
-                        },
+                            value: 2
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
                         {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'STIPPLING AS A FEATURE OF THE MARK: The stippling is a feature and does not indicate color:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('AS_stippling_as_feature_of_the_mark_CB') === '1' ? 'Yes' : 'No',
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 22
-                        },
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 15: Foreign Trademark Information (bold heading, not a bullet)
+                {
+                    children: [
                         {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'STIPPLING FOR SHADING: The stippling is for shading purposes only:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('AS_stippling_for_shading_CB') === '1' ? 'Yes' : 'No',
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 23
-                        },
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Concurrent Use Information:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('AS_concurrent_use_info_ST'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 24
-                        },
+                            detail: 0,
+                            format: 1,
+                            mode: 'normal',
+                            style: '',
+                            text: 'Foreign Trademark Information',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Foreign Trademark Information items as bullets
+                {
+                    children: [
                         {
                             children: [
                                 {
@@ -850,7 +1876,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 25
+                            value: 1
                         },
                         {
                             children: [
@@ -1011,7 +2037,39 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             type: 'listitem',
                             version: 1,
                             value: 36
-                        },
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'list',
+                    version: 1,
+                    listType: 'bullet',
+                    start: 1,
+                    tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
+                },
+                // Section 6: Foreign Registration
+                {
+                    children: [
                         {
                             children: [
                                 {
@@ -1234,135 +2292,7 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                             indent: 0,
                             type: 'listitem',
                             version: 1,
-                            value: 37
-                        },
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Contact Name:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('Contact_Name'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 38
-                        },
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Number of Classes:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('total___classes_'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 39
-                        },
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Form Type:',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('form_type_MC'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 40
-                        },
-                        {
-                            children: [
-                                {
-                                    detail: 0,
-                                    format: 1,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: 'Additional Trademark Statement?',
-                                    type: 'text',
-                                    version: 1
-                                },
-                                {
-                                    type: 'linebreak',
-                                    version: 1
-                                },
-                                {
-                                    detail: 0,
-                                    format: 0,
-                                    mode: 'normal',
-                                    style: '',
-                                    text: getFieldValue('additional_trademark_statement_MC'),
-                                    type: 'text',
-                                    version: 1
-                                }
-                            ],
-                            direction: 'ltr',
-                            format: '',
-                            indent: 0,
-                            type: 'listitem',
-                            version: 1,
-                            value: 41
+                            value: 13
                         }
                     ],
                     direction: 'ltr',
@@ -1373,6 +2303,25 @@ export const buildInternalNoteFromProofer = (prooferData) => {
                     listType: 'bullet',
                     start: 1,
                     tag: 'ul'
+                },
+                // Divider
+                {
+                    children: [
+                        {
+                            detail: 0,
+                            format: 0,
+                            mode: 'normal',
+                            style: '',
+                            text: '==============================================',
+                            type: 'text',
+                            version: 1
+                        }
+                    ],
+                    direction: 'ltr',
+                    format: '',
+                    indent: 0,
+                    type: 'paragraph',
+                    version: 1
                 }
             ],
             direction: 'ltr',
