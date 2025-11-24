@@ -623,6 +623,34 @@ export const createInternalNoteToWorkItem = async (workItemId, jsonNote, tenantN
 }
 
 /**
+ * Pin an internal note
+ * 
+ * @param {string} internalNoteId - The internal note UUID to pin
+ * @param {string|null} tenantName - The tenant name (default: null uses DEFAULT_TENANT)
+ * @returns {Promise<Object>} - Pin response
+ * 
+ * @example
+ * await pinInternalNote('note-uuid-123', 'altm');
+ */
+export const pinInternalNote = async (internalNoteId, tenantName = null) => {
+    const uri = `api/v1/internal-notes/${internalNoteId}/pin`;
+
+    try {
+        const res = await client.patch(uri, {}, {
+            headers: {
+                ...(await getAuthHeaders()),
+                'x-lz-current-tenant-name': tenantName ?? DEFAULT_TENANT,
+            },
+        });
+
+        return res?.data;
+    } catch (e) {
+        console.error(`Failed to pin internal note ${internalNoteId}`, e);
+        throw e;
+    }
+}
+
+/**
  * Upload a file (e.g., PDF) to a work item as an attachment
  * 
  * @param {string} workItemId - The work item ID to attach the file to

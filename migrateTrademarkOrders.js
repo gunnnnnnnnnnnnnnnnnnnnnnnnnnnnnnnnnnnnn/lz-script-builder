@@ -186,6 +186,9 @@ const createOrUpdateInternalNote = async (workItemId, prooferData) => {
             // Attempt to update the existing note
             await ecpApi.updateInternalNoteById(existingMigratedNote.id, jsonNote, TENANT_NAME);
             
+            // Pin the internal note to ensure it's always pinned
+            await ecpApi.pinInternalNote(existingMigratedNote.id, TENANT_NAME);
+            
             return {
                 internalNoteCreated: false,
                 internalNoteUpdated: true,
@@ -207,6 +210,11 @@ const createOrUpdateInternalNote = async (workItemId, prooferData) => {
 
     // Create new internal note
     const newNote = await ecpApi.createInternalNoteToWorkItem(workItemId, jsonNote, TENANT_NAME);
+
+    // Pin the internal note
+    if (newNote?.id) {
+        await ecpApi.pinInternalNote(newNote.id, TENANT_NAME);
+    }
 
     return {
         internalNoteCreated: true,
