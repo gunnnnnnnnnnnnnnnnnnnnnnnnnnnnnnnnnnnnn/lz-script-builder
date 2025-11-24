@@ -233,9 +233,9 @@ function buildJointIndividualOwners(fields, groups) {
 			alternateName = fields['DBA_AKA_TA_FKA_Value_ST'];
 			
 			if (dbaChoiceField) {
+				hasDBA = true; // Set to true if field is not blank
 				const upperChoice = dbaChoiceField.toUpperCase();
 				if (upperChoice.includes('DBA')) {
-					hasDBA = true;
 					dbaType = 'dba';
 				} else if (upperChoice.includes('TA')) {
 					dbaType = 'ta';
@@ -327,9 +327,9 @@ function buildOwners(fields, groups) {
 	let dbaType = null;
 	
 	if (dbaChoiceField) {
+		hasDBA = true; // Set to true if field is not blank
 		const upperChoice = dbaChoiceField.toUpperCase();
 		if (upperChoice.includes('DBA')) {
-			hasDBA = true;
 			dbaType = 'dba';
 		} else if (upperChoice.includes('TA')) {
 			dbaType = 'ta';
