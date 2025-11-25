@@ -109,7 +109,7 @@ function buildJointIndividualOwnerAddress(groups, ownerNumber) {
 	// Determine owner country
 	let ownerCountry;
 	if (countryField === 'Other') {
-		ownerCountry = outsideUSField;
+		ownerCountry = getCountryNameById(outsideUSField);
 	} else if (ownerState) {
 		ownerCountry = 'United States';
 	} else {
@@ -140,7 +140,7 @@ function buildJointIndividualDomicileAddress(groups, ownerNumber) {
 	// Determine domicile country
 	let domicileCountry;
 	if (domicileCountryField === 'Other') {
-		domicileCountry = domicileOutsideUSField;
+		domicileCountry = getCountryNameById(domicileOutsideUSField);
 	} else {
 		const countryField = domicileCountryField || domicileOutsideUSField;
 		domicileCountry = getCountryNameById(countryField);
@@ -405,7 +405,7 @@ function buildOwnerAddress(fields) {
 	// If country is 'Other', use the Outside_US_ field, otherwise use getCountryNameById
 	let ownerCountry;
 	if (fields['country'] === 'Other') {
-		ownerCountry = fields['Outside_US_'];
+		ownerCountry = getCountryNameById(fields['Outside_US_']);
 	} else if (ownerState) {
 		ownerCountry = 'United States';
 	} else  {
@@ -429,7 +429,7 @@ function buildDomicileAddress(fields) {
 	// If domicile_country_ST is 'Other', use the domicile_country_outside_US_ST field
 	let domicileCountry;
 	if (fields['domicile_country_ST'] === 'Other') {
-		domicileCountry = fields['domicile_country_outside_US_ST'];
+		domicileCountry = getCountryNameById(fields['domicile_country_outside_US_ST']);
 	} else {
 		const countryField = fields['domicile_country_ST'] || fields['domicile_country_outside_US_ST'];
 		domicileCountry = getCountryNameById(countryField);

@@ -77,13 +77,13 @@ export const getCountryNameById = (id) => {
 	const countryName = countryIdToName[input];
 	if (countryName) return countryName;
 
-	// If not found, check if it's already a full country name and return as-is
-	const isCountryName = Object.values(countryIdToName).some(
+	// If not found, check if it's already a full country name and return with proper casing
+	const properlyCapedCountryName = Object.values(countryIdToName).find(
 		(name) => name.toLowerCase() === input
 	);
-	if (isCountryName) {
-		// Return with proper casing from the original input
-		return id;
+	if (properlyCapedCountryName) {
+		// Return with proper casing from the countryIdToName map
+		return properlyCapedCountryName;
 	}
 
 	return null;
