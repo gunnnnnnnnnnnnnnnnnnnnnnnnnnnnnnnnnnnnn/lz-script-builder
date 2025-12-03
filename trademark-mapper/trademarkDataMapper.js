@@ -971,7 +971,8 @@ function buildAdditionalInformation(fields) {
 	
 	// Build selectAdditionalInformation array
 	const selectAdditionalInformation = [];
-	if (hasAdditionalStatement) {
+	// Add "disclaimer" only if AS_disclaimer_ST is not blank
+	if (fields['AS_disclaimer_ST']) {
 		selectAdditionalInformation.push('disclaimer');
 	}
 	if (Object.keys(priorRegistrationsSection).length > 0) {
