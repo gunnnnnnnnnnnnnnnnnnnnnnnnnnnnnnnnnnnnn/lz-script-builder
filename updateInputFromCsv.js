@@ -24,22 +24,26 @@ function updateInputFromCsv() {
         // Split by comma, handling quoted values if needed
         const parts = line.split(',');
         const processingOrderId = parts[0].trim();
-        const accountId = parts[2].trim(); // Account ID is in column 3 (index 2)
+        const workItemUrl = parts[1].trim(); // Work Item URL is in column 2 (index 1)
         
-        return { processingOrderId, accountId };
+        // Extract work item ID from URL
+        // URL format: https://experts.apigw.legalzoom.com/work/{WORK_ITEM_ID}
+        const workItemId = workItemUrl.split('/').pop();
+        
+        return { processingOrderId, workItemId };
     });
     
     // Generate the JavaScript file content
     const jsContent = `/**
  * Processing Orders for Trademark Order Migration
- * Each entry should contain processingOrderId and accountId
+ * Each entry should contain processingOrderId and workItemId
  * 
  * Generated from: ${CSV_FILE}
  * Total entries: ${entries.length}
  */
 export const PROCESSING_ORDERS = [
-${entries.map(({ processingOrderId, accountId }) => 
-    `    { processingOrderId: '${processingOrderId}', accountId: '${accountId}' },`
+${entries.map(({ processingOrderId, workItemId }) => 
+    `    { processingOrderId: '${processingOrderId}', workItemId: '${workItemId}' },`
 ).join('\n')}
 ];
 `;
@@ -54,8 +58,8 @@ ${entries.map(({ processingOrderId, accountId }) =>
     
     // Show first 3 entries as preview
     console.log('\nFirst 3 entries:');
-    entries.slice(0, 3).forEach(({ processingOrderId, accountId }) => {
-        console.log(`  { processingOrderId: '${processingOrderId}', accountId: '${accountId}' }`);
+    entries.slice(0, 3).forEach(({ processingOrderId, workItemId }) => {
+        console.log(`  { processingOrderId: '${processingOrderId}', workItemId: '${workItemId}' }`);
     });
 }
 

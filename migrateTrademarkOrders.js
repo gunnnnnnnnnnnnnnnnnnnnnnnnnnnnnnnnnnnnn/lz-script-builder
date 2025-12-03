@@ -48,42 +48,30 @@ const getCustomerIdFromAccount = async (accountId) => {
 };
 
 /**
- * Find existing work item or create a new one if it doesn't exist
+ * Verify that the work item exists and matches the processing order ID
+ * @param {string} workItemId 
  * @param {string} processingOrderId 
- * @param {string} accountId 
- * @returns {Promise<{ workItemId: string, isNewWorkItemCreated: boolean }>}
+ * @returns {Promise<{ workItemId: string, accountId: string, workItemVerified: boolean }>}
  */
-const findOrCreateWorkItem = async (processingOrderId, accountId) => {
-    const existingWorkItems = await ecpApi.findWorkItemsByProcessingOrderId(
-        processingOrderId,
-        TENANT_NAME
-    );
+const verifyWorkItem = async (workItemId, processingOrderId) => {
+    const workItem = await ecpApi.findWorkItemById(workItemId, TENANT_NAME);
 
-    // Filter work items to only include those matching our work template
-    const matchingWorkItems = existingWorkItems?.content?.filter(
-        workItem => workItem.name === WORK_TEMPLATE_NAME
-    ) || [];
-
-    if (matchingWorkItems.length === 0) {
-        // No matching work item exists, create a new one
-        const newWorkItem = await ecpApi.createWorkItem(
-            WORK_TEMPLATE_NAME,
-            accountId,
-            null, // taxInfo
-            null, // location
-            processingOrderId, // createdFromProcessingOrderId
-            TENANT_NAME
-        );
-        return {
-            workItemId: newWorkItem.id,
-            isNewWorkItemCreated: true,
-        };
+    if (!workItem) {
+        throw new Error(`Work item ${workItemId} not found`);
     }
 
-    // Matching work item already exists
+    // Verify that the work item's processingOrderId matches
+    if (workItem.processingOrderId !== processingOrderId) {
+        throw new Error(
+            `Work item ${workItemId} processingOrderId (${workItem.processingOrderId}) ` +
+            `does not match expected processingOrderId (${processingOrderId})`
+        );
+    }
+
     return {
-        workItemId: matchingWorkItems[0].id,
-        isNewWorkItemCreated: false,
+        workItemId: workItem.id,
+        accountId: workItem.accountId,
+        workItemVerified: true,
     };
 };
 
@@ -226,7 +214,7 @@ const createOrUpdateInternalNote = async (workItemId, prooferData) => {
 
 /**
  * Process a single processing order
- * @param {object} order - { processingOrderId: string, accountId: string }
+ * @param {object} order - { processingOrderId: string, workItemId: string }
  * @param {number} index 
  * @param {number} total 
  * @returns {Promise<object>}
@@ -236,19 +224,19 @@ const process = async (order, index, total) => {
     
     let payload = {
         processingOrderId: order.processingOrderId,
-        accountId: order.accountId,
+        workItemId: order.workItemId,
     };
 
     try {
-        // Step 0: Get customerId from account
+        // Step 1: Verify work item exists and matches processing order
+        const workItemResult = await verifyWorkItem(payload.workItemId, payload.processingOrderId);
+        payload = { ...payload, ...workItemResult };
+
+        // Step 2: Get customerId from account
         const customerResult = await getCustomerIdFromAccount(payload.accountId);
         payload = { ...payload, ...customerResult };
 
-        // Step 1: Find or create ALTM work item
-        const workItemResult = await findOrCreateWorkItem(payload.processingOrderId, payload.accountId);
-        payload = { ...payload, ...workItemResult };
-
-        // Step 2: Find or create trademark product
+        // Step 3: Find or create trademark product
         const productResult = await findOrCreateTrademarkProduct(
             payload.workItemId,
             payload.accountId,
@@ -257,11 +245,11 @@ const process = async (order, index, total) => {
         );
         payload = { ...payload, ...productResult };
 
-        // Step 3: Fetch PROOFER data from Answer Bank
+        // Step 4: Fetch PROOFER data from Answer Bank
         const prooferResult = await fetchProoferData(payload.processingOrderId);
         payload = { ...payload, ...prooferResult };
 
-        // Step 4: Map PROOFER data to TRADEMARK_EXPERT format
+        // Step 5: Map PROOFER data to TRADEMARK_EXPERT format
         const trademarkExpertData = mapProoferToTrademarkExpert(payload.prooferData);
         payload = { 
             ...payload, 
@@ -269,7 +257,7 @@ const process = async (order, index, total) => {
             mappingComplete: true 
         };
 
-        // Step 5: Create/update answer data in IP Service
+        // Step 6: Create/update answer data in IP Service
         const answerResponse = await ipApi.createOrUpdateAnswer(
             payload.productId,
             TRADEMARK_EXPERT_ANSWER_DATA_TYPE,
@@ -283,30 +271,30 @@ const process = async (order, index, total) => {
             answerCreated: true,
         };
 
-        // Step 6: Create or update internal note
+        // Step 7: Create or update internal note
         const internalNoteResult = await createOrUpdateInternalNote(
             payload.workItemId,
             payload.prooferData
         );
         payload = { ...payload, ...internalNoteResult };
 
-        // Step 7: Generate and upload PDF file
-        const pdfBuffer = await generateProoferPdf(payload.prooferData, payload.processingOrderId);
-        const pdfFilename = getProoferPdfFilename(payload.processingOrderId);
-        
-        const uploadResponse = await ecpApi.uploadFileToWorkItem(
-            payload.workItemId,
-            pdfBuffer,
-            pdfFilename,
-            false, // isUploadedForCustomer
-            TENANT_NAME
-        );
-        
-        payload = {
-            ...payload,
-            pdfUploaded: true,
-            pdfStorageDocumentId: uploadResponse?.storageDocumentId,
-        };
+        // Step 8: Generate and upload PDF file (TEMPORARILY DISABLED)
+        // const pdfBuffer = await generateProoferPdf(payload.prooferData, payload.processingOrderId);
+        // const pdfFilename = getProoferPdfFilename(payload.processingOrderId);
+        // 
+        // const uploadResponse = await ecpApi.uploadFileToWorkItem(
+        //     payload.workItemId,
+        //     pdfBuffer,
+        //     pdfFilename,
+        //     false, // isUploadedForCustomer
+        //     TENANT_NAME
+        // );
+        // 
+        // payload = {
+        //     ...payload,
+        //     pdfUploaded: true,
+        //     pdfStorageDocumentId: uploadResponse?.storageDocumentId,
+        // };
 
         return {
             ...payload,
@@ -334,10 +322,10 @@ const process = async (order, index, total) => {
         path: FILE_NAME,
         header: [
             { id: 'processingOrderId', title: 'Processing Order ID' },
+            { id: 'workItemId', title: 'Work Item ID' },
+            { id: 'workItemVerified', title: 'Work Item Verified' },
             { id: 'accountId', title: 'Account ID' },
             { id: 'customerId', title: 'Customer ID' },
-            { id: 'workItemId', title: 'Work Item ID' },
-            { id: 'isNewWorkItemCreated', title: 'Is New Work Item Created' },
             { id: 'productId', title: 'Product ID' },
             { id: 'isNewProductCreated', title: 'Is New Product Created' },
             { id: 'mappingComplete', title: 'Mapping Complete' },
