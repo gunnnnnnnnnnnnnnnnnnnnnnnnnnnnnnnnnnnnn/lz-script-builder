@@ -1,5 +1,4 @@
 import pLimit from 'p-limit';
-import pRetry from 'p-retry';
 import { createObjectCsvWriter } from 'csv-writer';
 import { getFormattedTimestamp } from './util.js';
 
@@ -7,6 +6,7 @@ import * as ecpApi from './api/ecpApi.js';
 import * as ipApi from './api/intellectualPropertyApi.js';
 import * as authApi from './api/authApi.js';
 import * as answerBankApi from './api/answerBankApi.js';
+import * as storageApi from './api/storageApi.js';
 import { ENVIRONMENT } from './config.js';
 import { PROCESSING_ORDERS } from './input/migrate-trademark-orders-input.js';
 import { mapProoferToTrademarkExpert } from './trademark-mapper/trademarkDataMapper.js';
@@ -95,7 +95,6 @@ const fetchProoferData = async (processingOrderId) => {
 
 /**
  * Find trademark product by work item ID, or create one if not found
- * Includes retry logic to handle eventual consistency
  * @param {string} workItemId 
  * @param {string} accountId 
  * @param {string} customerId 
@@ -103,49 +102,31 @@ const fetchProoferData = async (processingOrderId) => {
  * @returns {Promise<{ productId: string, isNewProductCreated: boolean }>}
  */
 const findOrCreateTrademarkProduct = async (workItemId, accountId, customerId, processingOrderId) => {
-    try {
-        return await pRetry(
-            async () => {
-                const products = await ipApi.findProducts(workItemId, PRODUCT_TYPE);
-                
-                if (!products || products.length === 0) {
-                    throw new Error('No trademark product found, retrying...');
-                }
-
-                return {
-                    productId: products[0].id,
-                    isNewProductCreated: false,
-                };
-            },
-            {
-                retries: 3,
-                minTimeout: 1000,
-                maxTimeout: 1000,
-                onFailedAttempt: (error) => {
-                    console.log(
-                        `Finding product for workItemId ${workItemId}: Attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`
-                    );
-                },
-            }
-        );
-    } catch (error) {
-        // All retries exhausted, create a new product
-        console.log(`No product found after retries for workItemId ${workItemId}, creating new product...`);
-        
-        const newProduct = await ipApi.createProduct({
-            accountId,
-            customerId,
-            processingOrderId,
-            workItemId,
-            type: PRODUCT_TYPE,
-            expertId: null,
-        });
-
+    const products = await ipApi.findProducts(workItemId, PRODUCT_TYPE);
+    
+    if (products && products.length > 0) {
         return {
-            productId: newProduct.id,
-            isNewProductCreated: true,
+            productId: products[0].id,
+            isNewProductCreated: false,
         };
     }
+
+    // No product found, create a new one
+    console.log(`No product found for workItemId ${workItemId}, creating new product...`);
+    
+    const newProduct = await ipApi.createProduct({
+        accountId,
+        customerId,
+        processingOrderId,
+        workItemId,
+        type: PRODUCT_TYPE,
+        expertId: null,
+    });
+
+    return {
+        productId: newProduct.id,
+        isNewProductCreated: true,
+    };
 };
 
 /**
@@ -278,23 +259,41 @@ const process = async (order, index, total) => {
         );
         payload = { ...payload, ...internalNoteResult };
 
-        // Step 8: Generate and upload PDF file (TEMPORARILY DISABLED)
-        // const pdfBuffer = await generateProoferPdf(payload.prooferData, payload.processingOrderId);
-        // const pdfFilename = getProoferPdfFilename(payload.processingOrderId);
-        // 
-        // const uploadResponse = await ecpApi.uploadFileToWorkItem(
-        //     payload.workItemId,
-        //     pdfBuffer,
-        //     pdfFilename,
-        //     false, // isUploadedForCustomer
-        //     TENANT_NAME
-        // );
-        // 
-        // payload = {
-        //     ...payload,
-        //     pdfUploaded: true,
-        //     pdfStorageDocumentId: uploadResponse?.storageDocumentId,
-        // };
+        // Step 8: Delete existing "_Proofer data" documents and upload new PDF file
+        // First, get the work item to find existing "_Proofer data" documents
+        const workItem = await ecpApi.findWorkItemById(payload.workItemId, TENANT_NAME);
+        const prooferDataDocs = workItem.documents?.filter(doc => 
+            doc.documentName.includes('_Proofer data')
+        ) || [];
+        
+        // Delete existing "_Proofer data" documents
+        for (const doc of prooferDataDocs) {
+            console.log(`Deleting existing document: ${doc.documentName} (${doc.storageDocumentId})`);
+            try {
+                await storageApi.deleteDocument(doc.storageDocumentId);
+            } catch (error) {
+                console.warn(`Failed to delete document ${doc.documentName}: ${error.message}`);
+            }
+        }
+        
+        // Generate and upload new PDF
+        const pdfBuffer = await generateProoferPdf(payload.prooferData, payload.processingOrderId);
+        const pdfFilename = getProoferPdfFilename(payload.processingOrderId);
+        
+        const uploadResponse = await ecpApi.uploadFileToWorkItem(
+            payload.workItemId,
+            pdfBuffer,
+            pdfFilename,
+            false, // isUploadedForCustomer
+            TENANT_NAME
+        );
+        
+        payload = {
+            ...payload,
+            pdfUploaded: true,
+            pdfStorageDocumentId: uploadResponse?.storageDocumentId,
+            deletedProoferDataDocs: prooferDataDocs.length,
+        };
 
         return {
             ...payload,
@@ -335,6 +334,7 @@ const process = async (order, index, total) => {
             { id: 'internalNoteUpdated', title: 'Internal Note Updated' },
             { id: 'internalNoteUpdateFailed', title: 'Internal Note Update Failed' },
             { id: 'internalNoteId', title: 'Internal Note ID' },
+            { id: 'deletedProoferDataDocs', title: 'Deleted Proofer Data Docs' },
             { id: 'pdfUploaded', title: 'PDF Uploaded' },
             { id: 'pdfStorageDocumentId', title: 'PDF Storage Document ID' },
             { id: 'isComplete', title: 'Is Complete' },
