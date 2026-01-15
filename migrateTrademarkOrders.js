@@ -13,7 +13,7 @@ import { mapProoferToTrademarkExpert } from './trademark-mapper/trademarkDataMap
 import { buildInternalNoteFromProofer, MIGRATED_FROM_PROOFER_TEXT } from './trademark-mapper/internalNoteMapper.js';
 import { generateProoferPdf, getProoferPdfFilename } from './trademark-mapper/pdfGenerator.js';
 
-const limit = pLimit(5);
+const limit = pLimit(16);
 
 /** Migration Setup */
 const TENANT_NAME = 'altm';

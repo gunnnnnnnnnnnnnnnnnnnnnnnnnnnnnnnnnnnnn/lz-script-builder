@@ -190,13 +190,16 @@ function getJointIndividualField(groups, fieldName, ownerNumber) {
 }
 
 /**
- * Builds owners array for Joint Individuals (creates 2 owners)
+ * Builds owners array for Joint Individuals (dynamically determines count from data)
  */
 function buildJointIndividualOwners(fields, groups) {
 	const owners = [];
 
-	// Build both owner 1 and owner 2
-	for (let ownerNumber = 1; ownerNumber <= 2; ownerNumber++) {
+	// Determine how many owners exist from the data
+	const ownerCount = parseInt(fields['owner_joint_info']) || 2; // Default to 2 if not specified
+	
+	// Build all owners dynamically
+	for (let ownerNumber = 1; ownerNumber <= ownerCount; ownerNumber++) {
 		// Helper to get field value for this owner
 		const getField = (fieldName) => getJointIndividualField(groups, fieldName, ownerNumber);
 		
