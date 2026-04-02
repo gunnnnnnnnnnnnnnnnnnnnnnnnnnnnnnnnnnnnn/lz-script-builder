@@ -26,3 +26,26 @@ export const updateDocumentDetails = async (documentId, status) => {
         //throw e;
     }
 }
+
+/**
+ * Delete a document by its storage document ID
+ * @param {string} storageDocumentId - The storage document ID to delete
+ * @returns {Promise<void>}
+ */
+export const deleteDocument = async (storageDocumentId) => {
+    const uri = `/storage-platform/v1/documents/${storageDocumentId}`;
+
+    try {
+        await client.delete(uri, {
+            headers: {
+                ...(await getAuthHeaders()),
+                'X-LZ-ROLE.ID': 'AttorneyServices',
+                'X-LZ-ROLE.TYPE': 'AttorneyServices',
+            },
+        });
+        console.log(`Successfully deleted document ${storageDocumentId}`);
+    } catch (e) {
+        console.error(`Failed to delete document ${storageDocumentId}`, e.message);
+        throw e;
+    }
+}

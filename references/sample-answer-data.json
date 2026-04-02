@@ -1,0 +1,82 @@
+{
+  "owners": [
+    {
+      "owner": {
+        "corporationName": ""
+      },
+      "ownerAddress": {
+        "ownerCity": "West Palm Beach",
+        "ownerState": "Florida",
+        "ownerCountry": "United States",
+        "ownerZipCode": "33401",
+        "ownerAddressLine1": "480 Hibiscus St"
+      },
+      "ownerSelection": {
+        "ownerType": "juristic",
+        "incorporationCountry": "United States",
+        "foreignEntityType_FreeForm": ""
+      },
+      "ownerPhoneNumber": "+1 (561) 856-5875",
+      "ownerEmailAddress": "hawleycampbell@yahoo.com"
+    }
+  ],
+  "attorney": {
+    "lastName": "Martin",
+    "firstName": "Ozelle",
+    "middleName": null,
+    "docketNumber": "E582465928",
+    "emailAddress": "tm@lzlegalservices.com",
+    "barStandingConfirmation": true,
+    "otherAppointedAttorneys": "Mary Garner, Monica Martinez, Lauren C. Concepcion and all other LZ Legal Services, LLC trademark attorneys"
+  },
+  "signatory": {
+    "signatoryName": null,
+    "signatoryPosition": null,
+    "otherSignatoryPosition": null
+  },
+  "markSelection": {
+    "designMark": {
+      "logoDescription": "a stylized design resembling both a brain and a thought or chat bubble. Within the design, a heart shape is integrated into the center. Below the design is the wording \"HC TELEPSYCH NP\" in a stylized font.",
+      "colorDescription": ""
+    },
+    "markFormat": "design_mark",
+    "nameAndLikeness": {
+      "containsNameLikeness": "no"
+    },
+    "translationTransliteration": [
+      {
+        "hasNonEnglishWords": "no"
+      }
+    ],
+    "translationAndTransliterationIntakeQuestionnaire": {
+      "translationAndTransliteration_IntakePlaceholder": null
+    }
+  },
+  "goodsAndServices": {
+    "filingBasis": null,
+    "additionalDataSection": {
+      "competitorExample": null,
+      "clientTrademarkUse": "Filing Basis: N/A\nDate of First Sale: N/A\nClass Number: N/A\nURL Associated with Trademark: N/A"
+    },
+    "howDoesTheClientPlanToUseTheirTrademarkSection": {
+      "howDoesTheClientPlanToUseTheirTrademark": "Yes, I'm using this mark."
+    }
+  },
+  "additionalInformation": {
+    "disclaimerSection": {
+      "disclaimerText": "TELEPSYCH NP"
+    },
+    "meaningSignificanceSection": {
+      "meanings": [
+        {
+          "meaning": "Nurse Practitioner",
+          "wordOrPhrase": "NP"
+        }
+      ]
+    },
+    "selectAdditionalInformation": [
+      "disclaimer",
+      "meaning"
+    ]
+  }
+}

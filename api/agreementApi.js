@@ -1,7 +1,8 @@
 import { getAuthHeaders } from './authApi.js';
-import { AGREEMENT_HOST } from '../config.js';
+import config from '../config.js';
 import axios from 'axios';
 
+const { AGREEMENT_HOST } = config;
 
 const client = axios.create({
     baseURL: AGREEMENT_HOST,
@@ -25,14 +26,14 @@ const client = axios.create({
  *  ]
  * }
  */
-export const createAgreements = async (customerId, entityOrderId, entityProcessingOrderId, orderId, processingOrderId, productId) => {
+export const createAgreements = async (customerId, entityOrderId, entityProcessingOrderId, orderId, processingOrderId, productId, givenYear) => {
     const uri = `v1/agreements`;
     const request = {
         entityProcessingOrderId,
         entityOrderId,
         orderId,
         processingOrderId,
-        givenYear: 2024,
+        givenYear,
         productId,
     };
 

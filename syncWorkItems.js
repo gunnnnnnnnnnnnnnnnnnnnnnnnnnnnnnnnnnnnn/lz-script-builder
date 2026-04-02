@@ -16,7 +16,7 @@ const FILE_NAME = `${ENVIRONMENT} - Sync Work Items (template: ${WORK_TEMPLATE_N
 const process = async (workItemId, index, total) => {
     console.log(`${String(index).padStart(String(total).length, '0')}/${total} (${((index / total) * 100).toFixed(2)}%)`);
     try {
-        await ecpApi.syncWorkItem(TENANT, workItemId);
+        await ecpApi.syncWorkItem(workItemId, TENANT);
 
         return {
             workItemId,
@@ -34,7 +34,7 @@ const process = async (workItemId, index, total) => {
 
 (async () => {
     console.log(`Start ${FILE_NAME}`);
-    const workItemIdSet = await ecpApi.getAllOutdatedWorkItemIds(TENANT, WORK_TEMPLATE_NAME);
+    const workItemIdSet = await ecpApi.getAllOutdatedWorkItemIds(WORK_TEMPLATE_NAME, TENANT);
     const payloads = [...workItemIdSet];
     const promises = payloads.map((workItemId, index) => limit(() => process(workItemId, index + 1, payloads.length)));
     const result = await Promise.all(promises);
