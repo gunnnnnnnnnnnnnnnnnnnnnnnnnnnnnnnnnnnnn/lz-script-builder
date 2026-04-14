@@ -74,21 +74,35 @@ export const getUserByUserId = async (userId) => {
     }
 }
 
-export const getUserByPartnerId = async (partnerId) => {
+const fetchUsersByPartnerIds = async (partnerIds) => {
     const uri = `/v1/partner/users-by-internal-ids`;
+    const res = await client.post(uri, partnerIds, {
+        headers: {
+            ...(await getAuthHeaders()),
+        },
+    });
+    return res?.data ?? [];
+};
 
+/**
+ * Fetches auth users by multiple partner (advisor) IDs.
+ *
+ * @param {string[]} partnerIds - Array of partner/internal IDs (advisorIds).
+ * @returns {Promise<Array<object>>} Array of user objects; may be shorter than partnerIds if some have no record.
+ */
+export const getUsersByPartnerIds = async (partnerIds) => {
+    if (!partnerIds?.length) return [];
     try {
-        const res = await client.post(uri, [partnerId], {
-            headers: {
-                ...(await getAuthHeaders()),
-            },
-        });
-
-        return res?.data[0];
+        return await fetchUsersByPartnerIds(partnerIds);
     } catch (e) {
-        console.error(`Failed to get user by partner id (${partnerId})`, e);
+        console.error(`Failed to get users by partner ids (count: ${partnerIds.length})`, e);
         throw e;
     }
+};
+
+export const getUserByPartnerId = async (partnerId) => {
+    const users = await getUsersByPartnerIds([partnerId]);
+    return users?.[0] ?? null;
 }
 /**
  * 

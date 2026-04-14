@@ -21,6 +21,7 @@ const CONFIG_BY_ENV = {
         ADVISOR_AGGREGATE_HOST: 'https://advisor-aggregate.apigw.legalzoom.com',
         IP_HOST: 'https://ip.apigw.legalzoom.com',
         ANSWER_BANK_HOST: 'https://questionnaire-answer.apigw.legalzoom.com',
+        RELATIONSHIP_HOST: 'https://relationship.apigw.legalzoom.com',
     },
     'q': {
         CLIENT_ID: 'JuD3KjTvzhLj12tmByWix1PKXCmyibnA',
@@ -37,6 +38,7 @@ const CONFIG_BY_ENV = {
         ADVISOR_AGGREGATE_HOST: 'https://advisor-aggregate.qa.apigw.legalzoom.com',
         IP_HOST: 'https://ip.qa.apigw.legalzoom.com',
         ANSWER_BANK_HOST: 'https://questionnaire-answer.qa.apigw.legalzoom.com',
+        RELATIONSHIP_HOST: 'https://relationship.qa.apigw.legalzoom.com',
     },
     'd': {
         CLIENT_ID: '72CN0fNhKMAjOPWOHFYpWiogx5kmshuh',
@@ -53,6 +55,7 @@ const CONFIG_BY_ENV = {
         ADVISOR_AGGREGATE_HOST: 'https://advisor-aggregate.dev.apigw.legalzoom.com',
         IP_HOST: 'https://dev.ip.dev.aws-01.legalzoom.com',
         ANSWER_BANK_HOST: 'https://questionnaire-answer.dev.apigw.legalzoom.com',
+        RELATIONSHIP_HOST: 'https://relationship.dev.apigw.legalzoom.com',
     }
 };
 
